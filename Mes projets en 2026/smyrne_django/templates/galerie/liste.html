@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Galerie Photos — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/galerie.css' %}">
+<style>
+  .filters-bar {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 25px 0 35px 0;
+  }
+  .filter-link {
+    padding: 8px 18px;
+    border-radius: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .filter-link:hover, .filter-link.active {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+  }
+  .gallery-item {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  .gallery-item:hover {
+    transform: scale(1.02);
+  }
+  /* Lightbox Modal */
+  .lightbox-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 999999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .lightbox-modal.active {
+    display: flex;
+  }
+  .lightbox-content {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    color: #fff;
+    font-size: 32px;
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <section class="page-galerie">
+    <div class="page-hero">
+      <h1>Notre <span>Galerie</span></h1>
+      <p>Découvrez les moments forts de notre communauté à travers nos photos</p>
+    </div>
+
+    <!-- FILTRES -->
+    <div class="filters-bar">
+      <a href="{% url 'galerie:liste' %}" class="filter-link {% if not categorie_active %}active{% endif %}">Toutes</a>
+      {% for cat in categories %}
+        <a href="{% url 'galerie:liste' %}?categorie={{ cat.slug }}" class="filter-link {% if categorie_active.slug == cat.slug %}active{% endif %}">
+          {{ cat.nom }}
+        </a>
+      {% endfor %}
+    </div>
+
+    <!-- GRILLE DE PHOTOS -->
+    <div class="gallery-grid" id="galleryGrid">
+      {% if photos %}
+        {% for photo in photos %}
+          <div class="gallery-item" data-badge="{{ photo.categorie.nom|default:photo.titre }}" onclick="openLightbox('{{ photo.image.url }}', '{{ photo.titre }}')">
+            <img src="{{ photo.image.url }}" alt="{{ photo.titre }}">
+            <span class="gallery-badge">{{ photo.categorie.nom|default:photo.titre }}</span>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="gallery-item" data-badge="Culte de réveil" onclick="openLightbox('{% static 'images/culte6.jpg' %}', 'Culte de réveil')">
+          <img src="{% static 'images/culte6.jpg' %}" alt="Galerie 1">
+          <span class="gallery-badge">Culte de réveil</span>
+        </div>
+        <div class="gallery-item" data-badge="Louange" onclick="openLightbox('{% static 'images/culte5.jpg' %}', 'Louange')">
+          <img src="{% static 'images/culte5.jpg' %}" alt="Galerie 2">
+          <span class="gallery-badge">Louange</span>
+        </div>
+        <div class="gallery-item" data-badge="Adoration" onclick="openLightbox('{% static 'images/culte4.jpg' %}', 'Adoration')">
+          <img src="{% static 'images/culte4.jpg' %}" alt="Galerie 3">
+          <span class="gallery-badge">Adoration</span>
+        </div>
+        <div class="gallery-item" data-badge="Jeunesse" onclick="openLightbox('{% static 'images/culte3.jpg' %}', 'Jeunesse')">
+          <img src="{% static 'images/culte3.jpg' %}" alt="Galerie 4">
+          <span class="gallery-badge">Jeunesse</span>
+        </div>
+        <div class="gallery-item" data-badge="Famille" onclick="openLightbox('{% static 'images/culte2.jpg' %}', 'Famille')">
+          <img src="{% static 'images/culte2.jpg' %}" alt="Galerie 5">
+          <span class="gallery-badge">Famille</span>
+        </div>
+        <div class="gallery-item" data-badge="Mission" onclick="openLightbox('{% static 'images/culte1.jpg' %}', 'Mission')">
+          <img src="{% static 'images/culte1.jpg' %}" alt="Galerie 6">
+          <span class="gallery-badge">Mission</span>
+        </div>
+        <div class="gallery-item" data-badge="Chorale" onclick="openLightbox('{% static 'images/chorale1.jpg' %}', 'Chorale')">
+          <img src="{% static 'images/chorale1.jpg' %}" alt="Chorale">
+          <span class="gallery-badge">Chorale</span>
+        </div>
+        <div class="gallery-item" data-badge="Baptême" onclick="openLightbox('{% static 'images/bapteme.jpeg' %}', 'Baptême')">
+          <img src="{% static 'images/bapteme.jpeg' %}" alt="Baptême">
+          <span class="gallery-badge">Baptême</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- BANNIÈRE STATS -->
+    <div class="stats-banner">
+      <div>
+        <div class="stat-number">+120</div>
+        <div class="stat-label">Photos</div>
+      </div>
+      <div>
+        <div class="stat-number">+15</div>
+        <div class="stat-label">Événements</div>
+      </div>
+      <div>
+        <div class="stat-number">+10</div>
+        <div class="stat-label">Ministères</div>
+      </div>
+      <div>
+        <div class="stat-number">+1000</div>
+        <div class="stat-label">Membres</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIGHTBOX MODAL -->
+  <div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
+    <button class="lightbox-close" type="button" aria-label="Fermer">&times;</button>
+    <img src="" alt="" class="lightbox-content" id="lightboxImg" onclick="event.stopPropagation()">
+  </div>
+
+  <script>
+    function openLightbox(src, alt) {
+      const modal = document.getElementById('lightboxModal');
+      const img = document.getElementById('lightboxImg');
+      img.src = src;
+      img.alt = alt;
+      modal.classList.add('active');
+    }
+    function closeLightbox() {
+      document.getElementById('lightboxModal').classList.remove('active');
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+{% endblock %}

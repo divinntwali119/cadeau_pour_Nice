@@ -1,0 +1,196 @@
+{% load static %}
+<!-- ============================================================
+     MODAL INVITER UN AMI (WHATSAPP & PARTAGE)
+     ============================================================ -->
+<div class="invite-modal-backdrop" id="inviteModalBackdrop" aria-hidden="true" inert role="dialog" aria-modal="true" aria-labelledby="inviteModalTitle" aria-describedby="inviteModalDescription">
+  <div class="invite-modal-card">
+    
+    <!-- En-tête -->
+    <div class="invite-modal-header">
+      <div class="invite-modal-title">
+        <div class="invite-modal-icon">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+        <div>
+          <span id="inviteModalTitle">Inviter un proche ou ami</span>
+          <div id="inviteModalDescription" class="invite-modal-description">Partagez la grâce et la communion fraternelle</div>
+        </div>
+      </div>
+      <button type="button" class="invite-modal-close" id="closeInviteModalBtn" aria-label="Fermer l’invitation"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    </div>
+
+    <!-- Corps -->
+    <div class="invite-modal-body">
+      <div class="invite-tabs-label">Choisissez le type d'invitation :</div>
+      <div class="invite-template-tabs">
+        <button type="button" class="invite-template-btn active" data-type="culte">
+          <i class="fa-solid fa-church"></i> Culte dominical
+        </button>
+        <button type="button" class="invite-template-btn" data-type="priere">
+          <i class="fa-solid fa-hands-praying"></i> Prière & Semaine
+        </button>
+        <button type="button" class="invite-template-btn" data-type="site">
+          <i class="fa-solid fa-globe"></i> Découvrir le site
+        </button>
+      </div>
+
+      <div class="invite-textarea-wrap">
+        <textarea class="invite-message-textarea" id="inviteMessageText" rows="5" aria-label="Message d'invitation"></textarea>
+      </div>
+
+      <div class="invite-actions-row">
+        <button type="button" class="btn-invite-whatsapp" id="sendInviteWhatsAppBtn">
+          <i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i>
+          <span>Inviter sur WhatsApp</span>
+        </button>
+
+        {% if request %}
+        <button type="button" class="btn-invite-secondary" id="nativeShareBtn" style="display: none;">
+          <i class="fa-solid fa-share-nodes"></i>
+          <span>Partager...</span>
+        </button>
+        {% endif %}
+
+        <button type="button" class="btn-invite-secondary" id="copyInviteMessageBtn">
+          <i class="fa-regular fa-copy"></i>
+          <span>Copier le texte</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  (function() {
+    var modal = document.getElementById('inviteModalBackdrop');
+    var closeBtn = document.getElementById('closeInviteModalBtn');
+    var tabs = document.querySelectorAll('.invite-template-btn');
+    var textarea = document.getElementById('inviteMessageText');
+    var whatsappBtn = document.getElementById('sendInviteWhatsAppBtn');
+    var copyBtn = document.getElementById('copyInviteMessageBtn');
+    var nativeShareBtn = document.getElementById('nativeShareBtn');
+    var lastTrigger = null;
+
+    var siteUrl = window.location.origin;
+
+    var templates = {
+      culte: "Paix et grâce du Seigneur ! 🕊️\n\nJe t'invite chaleureusement à célébrer avec nous ce dimanche à l'Église 5e CELPA Smyrne Bukavu. Venez vivre des moments intenses de louange, d'adoration et entendre la Parole de Dieu qui transforme les vies !\n\n📅 Culte Dominical : Dimanche de 09h00 à 12h00\n📍 Sanctuaire CELPA Smyrne, Bukavu\n🌐 Plus d'infos : " + siteUrl + "/cultes/",
+      
+      priere: "Chers frères et sœurs en Christ,\n\nRejoignez-nous cette semaine à l'Église 5e CELPA Smyrne pour nos temps d'intercession et d'édification spirituelle :\n\n🙏 Mercredi : Prière d'intercession (15h30)\n📖 Vendredi : Étude biblique (16h00)\n\nQue le Seigneur vous bénisse abondamment !\n🌐 " + siteUrl + "/priere/",
+      
+      site: "Découvrez le site officiel de l'Église 5e CELPA Smyrne de Bukavu ! 🌟\n\nVous y trouverez les prédications en audio et vidéo, les actualités, les horaires de cultes et la possibilité de déposer vos requêtes de prière :\n\n👉 " + siteUrl
+    };
+
+    function setTemplate(type) {
+      if (textarea) {
+        textarea.value = templates[type] || templates.culte;
+      }
+    }
+
+    setTemplate('culte');
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        tabs.forEach(function(t) { t.classList.remove('active'); });
+        this.classList.add('active');
+        setTemplate(this.getAttribute('data-type'));
+      });
+    });
+
+    window.openInviteModal = function(trigger) {
+      if (!modal) return;
+      lastTrigger = trigger || document.activeElement;
+      modal.inert = false;
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+      window.requestAnimationFrame(function() {
+        if (closeBtn) closeBtn.focus({ preventScroll: true });
+      });
+    };
+
+    window.closeInviteModal = function() {
+      if (!modal) return;
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      modal.inert = true;
+      document.body.classList.remove('modal-open');
+      if (lastTrigger && lastTrigger.isConnected) {
+        var menuButton = document.getElementById('hamburgerBtn');
+        (lastTrigger.closest('.app-menu-drawer') ? menuButton : lastTrigger)?.focus({ preventScroll: true });
+      }
+      lastTrigger = null;
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', window.closeInviteModal);
+    if (modal) {
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) window.closeInviteModal();
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+        e.preventDefault();
+        window.closeInviteModal();
+        return;
+      }
+      if (e.key === 'Tab' && modal && modal.classList.contains('active')) {
+        var focusable = Array.from(modal.querySelectorAll('button:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'))
+          .filter(function(element) { return element.getClientRects().length; });
+        if (!focusable.length) return;
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (e.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    // Ouverture via boutons avec attribut data-open-invite
+    document.querySelectorAll('[data-open-invite]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.openInviteModal(btn);
+      });
+    });
+
+    // Envoi WhatsApp
+    if (whatsappBtn && textarea) {
+      whatsappBtn.addEventListener('click', function() {
+        var text = encodeURIComponent(textarea.value);
+        window.open('https://api.whatsapp.com/send?text=' + text, '_blank');
+      });
+    }
+
+    // Copie Presse-papiers
+    if (copyBtn && textarea) {
+      copyBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(textarea.value).then(function() {
+          if (window.showSmyrneToast) {
+            window.showSmyrneToast("Message d'invitation copié dans le presse-papiers !", "fa-solid fa-copy");
+          } else {
+            alert("Message copié !");
+          }
+        });
+      });
+    }
+
+    // Web Share API native si supportée (mobiles)
+    if (navigator.share && nativeShareBtn && textarea) {
+      nativeShareBtn.style.display = 'inline-flex';
+      nativeShareBtn.addEventListener('click', function() {
+        navigator.share({
+          title: "Invitation — Église 5e CELPA Smyrne",
+          text: textarea.value,
+          url: siteUrl
+        }).catch(function(err) {});
+      });
+    }
+  })();
+</script>

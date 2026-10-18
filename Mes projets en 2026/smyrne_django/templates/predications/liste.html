@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Prédications — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/predications.css' %}">
+<style>
+  /* ============================================================
+     HERO ÉPURÉ
+     ============================================================ */
+  .page-hero {
+    padding: 38px 16px 26px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+  }
+  .page-hero h1 {
+    font-size: 30px;
+    font-weight: 800;
+    margin: 0 0 8px;
+    letter-spacing: -0.8px;
+    color: var(--text-color);
+    line-height: 1.15;
+  }
+  .page-hero p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    margin: 0;
+    max-width: 460px;
+    margin-inline: auto;
+    line-height: 1.55;
+  }
+
+  /* ============================================================
+     SECTION
+     ============================================================ */
+  .recent-section {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+    padding: 0 16px;
+  }
+  .recent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  /* ============================================================
+     CARTE PRÉDICATION
+     ============================================================ */
+  .predication-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .predication-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.09);
+    border-color: rgba(2,132,199,0.35);
+  }
+
+  .predication-thumb {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #0f172a;
+  }
+  .predication-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+  }
+  .predication-card:hover .predication-thumb img {
+    transform: scale(1.05);
+  }
+  .video-duration {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.72);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    backdrop-filter: blur(4px);
+  }
+
+  .predication-body {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .predication-body h4 {
+    font-size: 14.5px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: var(--text-color);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .predication-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .predication-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .predication-body p {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin: 0 0 10px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .predication-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: auto;
+  }
+  .btn-follow {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 11px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 7px;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn-follow:not([style*="background"]) {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-color);
+  }
+  .btn-follow:not([style*="background"]):hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+  }
+  .btn-download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+  .btn-download:hover {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+  }
+
+  /* ============================================================
+     PAGINATION
+     ============================================================ */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 20px auto 4px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .page-link {
+    padding: 6px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 7px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 12px;
+    transition: all 0.2s;
+  }
+  .page-link:hover, .page-link.current {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+  }
+
+  @media (max-width: 600px) {
+    .page-hero { padding: 28px 14px 18px; }
+    .page-hero h1 { font-size: 22px; }
+    .recent-grid { grid-template-columns: 1fr; gap: 12px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <!-- ===== HERO ÉPURÉ ===== -->
+  <section class="page-hero fade-in">
+    <h1>Nos Prédications</h1>
+    <p>Plongez dans la Parole de Dieu à travers nos messages puissants et inspirants</p>
+  </section>
+
+  <!-- ===== GRILLE ===== -->
+  <section class="recent-section fade-in">
+    <div class="recent-grid">
+      {% if page_obj %}
+        {% for pred in page_obj %}
+          <div class="predication-card">
+            <div class="predication-thumb">
+              <img src="{% if pred.image %}{{ pred.image.url }}{% else %}{% static 'images/predication.jpeg' %}{% endif %}" alt="{{ pred.titre }}">
+              <div class="video-duration">
+                {% if pred.video_url or pred.video_fichier %}
+                  <i class="fa-solid fa-play"></i> Vidéo
+                {% elif pred.audio_fichier %}
+                  <i class="fa-solid fa-headphones"></i> Audio
+                {% else %}
+                  <i class="fa-solid fa-book-bible"></i> Message
+                {% endif %}
+              </div>
+            </div>
+            <div class="predication-body">
+              <h4>{{ pred.titre }}</h4>
+              <div class="predication-meta">
+                <span><i class="fa-regular fa-user"></i> {{ pred.predicateur }}</span>
+                {% if pred.date_publication %}
+                  <span><i class="fa-regular fa-calendar"></i> {{ pred.date_publication|date:"d M Y" }}</span>
+                {% endif %}
+              </div>
+              <p>{{ pred.description|truncatewords:18 }}</p>
+              <div class="predication-actions">
+                <a href="{% url 'predications:detail' pred.slug %}" class="btn-follow"><i class="fa-solid fa-play"></i> Détails</a>
+                {% if pred.audio_fichier %}
+                  <button type="button"
+                          class="btn-follow"
+                          style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; border: none;"
+                          data-play-audio="{{ pred.audio_fichier.url }}"
+                          data-title="{{ pred.titre }}"
+                          data-preacher="{{ pred.predicateur }}"
+                          data-cover="{% if pred.image %}{{ pred.image.url }}{% else %}{% static 'images/predication.jpeg' %}{% endif %}">
+                    <i class="fa-solid fa-headphones"></i> Écouter
+                  </button>
+                  <a href="{{ pred.audio_fichier.url }}" download class="btn-download" title="Télécharger l'audio"><i class="fa-solid fa-download"></i></a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <!-- Fallback cards si la base est vide -->
+        <div class="predication-card">
+          <div class="predication-thumb">
+            <img src="{% static 'images/predication.jpeg' %}" alt="Prédication 1">
+            <div class="video-duration"><i class="fa-solid fa-play"></i> 45:01</div>
+          </div>
+          <div class="predication-body">
+            <h4>La Puissance de la Foi</h4>
+            <div class="predication-meta">
+              <span><i class="fa-regular fa-user"></i> Pasteur Victor Nablno</span>
+              <span><i class="fa-regular fa-calendar"></i> Dimanche Culte</span>
+            </div>
+            <p>Découvrez comment la foi peut déplacer des montagnes dans votre vie quotidienne.</p>
+            <div class="predication-actions">
+              <button type="button"
+                      class="btn-follow"
+                      style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; border: none;"
+                      data-play-audio="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+                      data-title="La Puissance de la Foi"
+                      data-preacher="Pasteur Victor Nablno"
+                      data-cover="{% static 'images/predication.jpeg' %}">
+                <i class="fa-solid fa-headphones"></i> Écouter (Démo)
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="predication-card">
+          <div class="predication-thumb">
+            <img src="{% static 'images/predication.jpeg' %}" alt="Prédication 2">
+            <div class="video-duration"><i class="fa-solid fa-play"></i> 52:30</div>
+          </div>
+          <div class="predication-body">
+            <h4>Vivre dans la Grâce</h4>
+            <div class="predication-meta">
+              <span><i class="fa-regular fa-user"></i> Pasteur Victor Nablno</span>
+              <span><i class="fa-regular fa-calendar"></i> Dimanche Culte</span>
+            </div>
+            <p>Comprendre l'amour inconditionnel de Dieu et marcher dans sa vérité chaque jour.</p>
+            <div class="predication-actions">
+              <button type="button"
+                      class="btn-follow"
+                      style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; border: none;"
+                      data-play-audio="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+                      data-title="Vivre dans la Grâce"
+                      data-preacher="Pasteur Victor Nablno"
+                      data-cover="{% static 'images/predication.jpeg' %}">
+                <i class="fa-solid fa-headphones"></i> Écouter (Démo)
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="predication-card">
+          <div class="predication-thumb">
+            <img src="{% static 'images/predication.jpeg' %}" alt="Prédication 3">
+            <div class="video-duration"><i class="fa-solid fa-play"></i> 38:15</div>
+          </div>
+          <div class="predication-body">
+            <h4>L'Amour du Prochain</h4>
+            <div class="predication-meta">
+              <span><i class="fa-regular fa-user"></i> Pasteur David M.</span>
+              <span><i class="fa-regular fa-calendar"></i> Dimanche Culte</span>
+            </div>
+            <p>Comment refléter le caractère de Christ à travers nos relations quotidiennes.</p>
+            <div class="predication-actions">
+              <button type="button"
+                      class="btn-follow"
+                      style="background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff; border: none;"
+                      data-play-audio="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+                      data-title="L'Amour du Prochain"
+                      data-preacher="Pasteur David M."
+                      data-cover="{% static 'images/predication.jpeg' %}">
+                <i class="fa-solid fa-headphones"></i> Écouter (Démo)
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- ===== PAGINATION ===== -->
+    {% if page_obj.has_other_pages %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo; Précédent</a>
+        {% endif %}
+        <span class="page-link current">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="page-link">Suivant &raquo;</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

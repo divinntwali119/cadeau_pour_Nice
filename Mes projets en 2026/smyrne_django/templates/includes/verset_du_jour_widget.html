@@ -1,0 +1,145 @@
+{% load static %}
+<!-- Dialogue du verset du jour, ouvert depuis le menu hamburger. -->
+{% if verset_du_jour %}
+<div class="verset-modal-backdrop" id="versetModalBackdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="versetModalTitle" hidden>
+  <div class="verset-card" role="document">
+    <i class="fa-solid fa-bible verset-watermark"></i>
+
+    <div class="verset-header">
+      <div class="verset-title-wrap">
+        <div class="verset-icon-glow">
+          <i class="fa-solid fa-quote-left"></i>
+        </div>
+        <div>
+          <h2 class="verset-title-text" id="versetModalTitle">Verset du jour</h2>
+        </div>
+      </div>
+
+      <button type="button" class="verset-modal-close" id="closeVersetModalBtn" aria-label="Fermer le verset du jour">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+
+      {% if verset_du_jour.theme %}
+        <span class="verset-theme-badge">
+          <i class="fa-solid fa-sparkles"></i> {{ verset_du_jour.theme }}
+        </span>
+      {% endif %}
+    </div>
+
+    <div class="verset-body">
+      <blockquote class="verset-quote-text" id="versetTextBlock">
+        <span class="verset-quote-mark">«</span>{{ verset_du_jour.texte }}<span class="verset-quote-mark">»</span>
+      </blockquote>
+      <div class="verset-reference">
+        <i class="fa-solid fa-bookmark"></i>
+        <span id="versetRefBlock">{{ verset_du_jour.reference }}</span>
+      </div>
+    </div>
+
+    <div class="verset-footer">
+      <div class="verset-date-badge">
+        <i class="fa-regular fa-calendar-check"></i>
+        <span>Méditation quotidienne du {{ verset_du_jour.date }}</span>
+      </div>
+
+      <div class="verset-actions">
+        <a href="https://api.whatsapp.com/send?text={{ verset_du_jour.whatsapp_share_text|urlencode }}"
+           target="_blank"
+           rel="noopener"
+           class="btn-verset-whatsapp"
+           title="Partager ce verset sur WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>Partager sur WhatsApp</span>
+        </a>
+
+        <button type="button"
+                class="btn-verset-copy"
+                id="copyVersetBtn"
+                data-text="« {{ verset_du_jour.texte }} » — {{ verset_du_jour.reference }}"
+                title="Copier le verset">
+          <i class="fa-regular fa-copy"></i>
+          <span>Copier</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  (function() {
+    var modal = document.getElementById('versetModalBackdrop');
+    var copyBtn = document.getElementById('copyVersetBtn');
+    var closeBtn = document.getElementById('closeVersetModalBtn');
+    var lastTrigger = null;
+
+    window.openDailyVerseModal = function(trigger) {
+      if (!modal) return;
+      lastTrigger = trigger || document.activeElement;
+      modal.hidden = false;
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+      requestAnimationFrame(function() {
+        if (closeBtn) closeBtn.focus({ preventScroll: true });
+      });
+    };
+
+    window.closeDailyVerseModal = function() {
+      if (!modal) return;
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      modal.hidden = true;
+      document.body.classList.remove('modal-open');
+      if (lastTrigger && lastTrigger.isConnected) {
+        var menuButton = document.getElementById('hamburgerBtn');
+        (lastTrigger.closest('.app-menu-drawer') ? menuButton : lastTrigger)?.focus({ preventScroll: true });
+      }
+      lastTrigger = null;
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', window.closeDailyVerseModal);
+    if (modal) {
+      modal.addEventListener('click', function(event) {
+        if (event.target === modal) window.closeDailyVerseModal();
+      });
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (!modal || modal.hidden) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        window.closeDailyVerseModal();
+      } else if (event.key === 'Tab') {
+        var focusable = Array.from(modal.querySelectorAll(
+          'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+        )).filter(function(element) { return element.getClientRects().length; });
+        if (!focusable.length) return;
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (event.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        var text = this.getAttribute('data-text') || '';
+        if (!navigator.clipboard || !navigator.clipboard.writeText) return;
+        navigator.clipboard.writeText(text).then(function() {
+          if (window.showSmyrneToast) {
+            window.showSmyrneToast("Verset du jour copié avec succès !", "fa-solid fa-check");
+          } else {
+            alert("Verset copié !");
+          }
+        });
+      });
+    }
+  })();
+</script>
+{% endif %}

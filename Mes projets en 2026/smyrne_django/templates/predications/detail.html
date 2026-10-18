@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ predication.titre }} — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/predications.css' %}">
+<style>
+  .detail-container {
+    max-width: 900px;
+    margin: 16px auto 28px;
+    padding: 0 16px;
+  }
+
+  /* ---- HEADER (titre en haut) ---- */
+  .detail-header {
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .detail-title {
+    font-size: 23px;
+    font-weight: 800;
+    margin: 0 0 6px;
+    color: var(--text-color);
+    line-height: 1.25;
+    letter-spacing: -0.4px;
+  }
+  .detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+  .detail-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ---- MEDIA ---- */
+  .media-player-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #000;
+    margin-bottom: 14px;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.10);
+  }
+  .media-player-wrapper iframe,
+  .media-player-wrapper video {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
+  }
+
+  /* ---- AUDIO BOX ---- */
+  .audio-player-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.04);
+  }
+  .audio-player-box audio {
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 2px;
+  }
+  .btn-play-sermon {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-play-sermon:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(2,132,199,0.35);
+  }
+
+  /* ---- DESCRIPTION ---- */
+  .detail-description {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-color);
+    margin-bottom: 22px;
+  }
+  .detail-description p {
+    margin: 0 0 8px;
+  }
+
+  /* ---- AUTRES ---- */
+  .section-header {
+    text-align: center;
+    margin: 22px 0 12px;
+  }
+  .section-header h2 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 2px;
+    color: var(--text-color);
+  }
+  .section-header p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .recent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .predication-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .predication-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.09);
+    border-color: rgba(2,132,199,0.35);
+  }
+  .predication-thumb {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #0f172a;
+  }
+  .predication-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+  }
+  .predication-card:hover .predication-thumb img {
+    transform: scale(1.05);
+  }
+  .predication-body {
+    padding: 11px 13px 13px;
+  }
+  .predication-body h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 5px;
+    color: var(--text-color);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .predication-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .btn-follow {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 11px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 7px;
+    text-decoration: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    transition: all 0.2s;
+  }
+  .btn-follow:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+  }
+
+  /* ---- RETOUR (lien épuré, sans forme) ---- */
+  .back-link-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0 4px;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 2px;
+    border-bottom: 1px solid transparent;
+    transition: all 0.22s ease;
+  }
+  .back-link i {
+    font-size: 11.5px;
+    transition: transform 0.22s ease;
+  }
+  .back-link:hover {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+  }
+  .back-link:hover i {
+    transform: translateX(-4px);
+  }
+
+  @media (max-width: 600px) {
+    .detail-title { font-size: 19px; }
+    .recent-grid { grid-template-columns: 1fr; gap: 10px; }
+    .audio-player-box { padding: 12px 14px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+
+  <!-- ===== TITRE + META EN HAUT ===== -->
+  <div class="detail-header">
+    <h1 class="detail-title">{{ predication.titre }}</h1>
+    <div class="detail-meta">
+      <span><i class="fa-regular fa-user"></i> {{ predication.predicateur }}</span>
+      {% if predication.date_publication %}
+        <span><i class="fa-regular fa-calendar"></i> {{ predication.date_publication|date:"d F Y" }}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ===== MÉDIA ===== -->
+  {% if embed_url %}
+    <div class="media-player-wrapper">
+      <iframe src="{{ embed_url }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  {% elif predication.video_fichier %}
+    <div class="media-player-wrapper">
+      <video controls poster="{% if predication.image %}{{ predication.image.url }}{% endif %}">
+        <source src="{{ predication.video_fichier.url }}" type="video/mp4">
+        Votre navigateur ne supporte pas la lecture de vidéo.
+      </video>
+    </div>
+  {% elif predication.image %}
+    <div style="max-height: 380px; overflow:hidden; border-radius: 12px; margin-bottom: 14px;">
+      <img src="{{ predication.image.url }}" alt="{{ predication.titre }}" style="width: 100%; height: auto; object-fit: cover;">
+    </div>
+  {% endif %}
+
+  <!-- ===== AUDIO ===== -->
+  {% if predication.audio_fichier %}
+    <div class="audio-player-box">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <strong style="color: var(--text-color); font-size: 13px; display: flex; align-items: center; gap: 7px;">
+            <i class="fa-solid fa-headphones" style="color: var(--primary-color);"></i>
+            <span>Enregistrement Audio Disponible</span>
+          </strong>
+          <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+            Écoutez tout en continuant de naviguer sur les autres pages du site
+          </div>
+        </div>
+        <button type="button"
+                class="btn-play-sermon"
+                data-play-audio="{{ predication.audio_fichier.url }}"
+                data-title="{{ predication.titre }}"
+                data-preacher="{{ predication.predicateur }}"
+                data-cover="{% if predication.image %}{{ predication.image.url }}{% else %}{% static 'images/predication.jpeg' %}{% endif %}">
+          <i class="fa-solid fa-play"></i>
+          <span>Écoute Continue</span>
+        </button>
+      </div>
+      <audio controls>
+        <source src="{{ predication.audio_fichier.url }}" type="audio/mpeg">
+        Votre navigateur ne supporte pas l'élément audio.
+      </audio>
+    </div>
+  {% endif %}
+
+  <!-- ===== DESCRIPTION ===== -->
+  <div class="detail-description">
+    {{ predication.description|linebreaks }}
+  </div>
+
+  <!-- ===== AUTRES PRÉDICATIONS ===== -->
+  {% if autres %}
+    <div class="section-header">
+      <h2>Autres Prédications</h2>
+      <p>Continuez à méditer avec ces messages récents</p>
+    </div>
+    <div class="recent-grid">
+      {% for autre in autres %}
+        <div class="predication-card">
+          <div class="predication-thumb">
+            <img src="{% if autre.image %}{{ autre.image.url }}{% else %}{% static 'images/predication.jpeg' %}{% endif %}" alt="{{ autre.titre }}">
+          </div>
+          <div class="predication-body">
+            <h4>{{ autre.titre }}</h4>
+            <div class="predication-meta">
+              <span><i class="fa-regular fa-user"></i> {{ autre.predicateur }}</span>
+            </div>
+            <div style="margin-top: 8px;">
+              <a href="{% url 'predications:detail' autre.slug %}" class="btn-follow"><i class="fa-solid fa-play"></i> Découvrir</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- ===== RETOUR (lien épuré en bas, sans forme) ===== -->
+  <div class="back-link-wrapper">
+    <a href="{% url 'predications:liste' %}" class="back-link">
+      <i class="fa-solid fa-arrow-left"></i>
+      <span>Retour aux prédications</span>
+    </a>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,822 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dons & Offrandes — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block og_title %}Soutenir l'Église Smyrne — Dîmes, Offrandes & Dons{% endblock %}
+{% block og_description %}Participez à l'avancement du Royaume de Dieu à travers vos dîmes, offrandes et dons pour la 5e CELPA Smyrne Bukavu.{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ============================================================
+     AUCUNE ANIMATION SUR CETTE PAGE
+     ============================================================ */
+  .dons-page,
+  .dons-page * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* ============================================================
+     HERO + VERSET
+     ============================================================ */
+  .dons-hero {
+    text-align: center;
+    padding: 28px 16px 18px;
+    margin-bottom: 20px;
+  }
+  .dons-hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.9px;
+    line-height: 1.12;
+    color: #111827;
+    margin: 0 0 8px;
+  }
+  .dons-hero > p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0 auto 16px;
+    max-width: 460px;
+    line-height: 1.5;
+  }
+  .dons-verse {
+    max-width: 600px;
+    margin: 0 auto;
+    font-style: italic;
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.65;
+  }
+  .dons-verse .verse-ref {
+    display: block;
+    margin-top: 6px;
+    font-style: normal;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #2563eb;
+  }
+
+  /* ============================================================
+     CONTENEUR
+     ============================================================ */
+  .dons-container {
+    max-width: 1080px;
+    margin: 0 auto 28px;
+    padding: 0 14px;
+  }
+
+  /* ============================================================
+     3 PILIERS — ICÔNES NUES
+     ============================================================ */
+  .dons-categories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid #e5e7eb;
+    margin-bottom: 28px;
+  }
+  .don-category-row {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 12px 2px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .don-category-icon {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563eb;
+    font-size: 22px;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .don-category-content h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 3px;
+    letter-spacing: -0.2px;
+  }
+  .don-category-content p {
+    font-size: 12.5px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ============================================================
+     SECTION CANAUX
+     ============================================================ */
+  .canaux-section { margin-top: 8px; }
+  .canaux-header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 20px;
+  }
+  .canaux-eyebrow {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #2563eb;
+    margin-bottom: 8px;
+  }
+  .canaux-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.7px;
+    line-height: 1.15;
+    color: #111827;
+    margin: 0 0 8px;
+  }
+  .canaux-subtitle {
+    font-size: 12.5px;
+    color: #6b7280;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* FILTRES — pilule (arrondi conservé) */
+  .payment-filter-bar {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .payment-filter-btn {
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    color: #6b7280;
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .payment-filter-btn:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+  .payment-filter-btn.active {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+  }
+
+  /* ============================================================
+     GRILLE DES MOYENS
+     ============================================================ */
+  .moyens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .moyen-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 18px rgba(0,0,0,0.045);
+    display: flex;
+    flex-direction: column;
+  }
+  .moyen-card:hover {
+    box-shadow: 0 10px 26px rgba(0,0,0,0.09);
+    border-color: #d1d5db;
+  }
+
+  /* LISERÉ SUPÉRIEUR — COULEURS UNIES PAR AGENCE */
+  .moyen-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #2563eb;
+  }
+  .moyen-card[data-agency="mpesa"]::before   { background: #e60000; }
+  .moyen-card[data-agency="airtel"]::before  { background: #ee1c25; }
+  .moyen-card[data-agency="orange"]::before  { background: #ff7900; }
+  .moyen-card[data-agency="rawbank"]::before { background: #000000; }
+  .moyen-card[data-agency="tmb"]::before     { background: #002b49; }
+
+  .moyen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .agency-logo-container {
+    min-width: 0;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .agency-logo-img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 72px;
+    max-height: 30px;
+    object-fit: contain;
+    flex: 0 0 auto;
+  }
+  .agency-name {
+    min-width: 0;
+    color: #111827;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.1px;
+    overflow-wrap: anywhere;
+  }
+  .agency-logo-fallback {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #111827;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .agency-logo-fallback i {
+    color: #2563eb;
+    font-size: 16px;
+  }
+
+  .moyen-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 0;
+    background: #f3f4f6;
+    color: #374151;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .moyen-body {
+    padding: 12px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .moyen-number-block {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 0;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .moyen-number-meta { min-width: 0; flex: 1; }
+  .moyen-field-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 2px;
+  }
+  .moyen-number {
+    display: block;
+    font-family: 'Montserrat', monospace, sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    color: #111827;
+    word-break: break-all;
+    line-height: 1.15;
+  }
+
+  /* BOUTON COPIER — arrondi conservé */
+  .btn-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .btn-copy:hover { background: #1d4ed8; }
+  .btn-copy.copied { background: #16a34a !important; }
+
+  .moyen-beneficiaire {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #374151;
+  }
+  .moyen-beneficiaire i {
+    color: #16a34a;
+    font-size: 11px;
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+  .moyen-beneficiaire strong { color: #111827; font-weight: 700; }
+
+  .moyen-details {
+    padding: 10px 12px;
+    background: rgba(37,99,235,0.04);
+    border-left: 3px solid #2563eb;
+    border-radius: 0;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #4b5563;
+  }
+  .moyen-details i { color: #2563eb; margin-right: 4px; }
+  .moyen-details strong {
+    color: #111827;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 2px;
+  }
+
+  /* ÉTAT VIDE */
+  .moyens-empty-state {
+    grid-column: 1 / -1;
+    padding: 28px 20px;
+    border: 1px dashed #d1d5db;
+    border-radius: 0;
+    background: #f9fafb;
+    text-align: center;
+  }
+  .moyens-empty-state i {
+    display: block;
+    margin-bottom: 10px;
+    color: #2563eb;
+    font-size: 26px;
+  }
+  .moyens-empty-state h3 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+  }
+  .moyens-empty-state p {
+    max-width: 520px;
+    margin: 0 auto;
+    color: #6b7280;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+
+  /* ============================================================
+     WHATSAPP
+     ============================================================ */
+  .dons-whatsapp-box {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0;
+    padding: 22px 18px;
+    text-align: center;
+    margin-top: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 18px rgba(0,0,0,0.045);
+  }
+  .dons-whatsapp-box > div:first-child {
+    font-size: 28px;
+    color: #25d366;
+    margin-bottom: 8px;
+  }
+  .dons-whatsapp-box h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px;
+    letter-spacing: -0.3px;
+  }
+  .dons-whatsapp-box > p {
+    font-size: 12.5px;
+    color: #6b7280;
+    max-width: 520px;
+    margin: 0 auto 14px;
+    line-height: 1.5;
+  }
+
+  .btn-whatsapp-don {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #25d366;
+    color: #ffffff !important;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 10px 20px;
+    border-radius: 0;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(37,211,102,0.28);
+  }
+  .btn-whatsapp-don:hover {
+    background: #1da851;
+  }
+
+  .don-report-form {
+    width: min(100%, 620px);
+    margin: 12px auto 0;
+    text-align: left;
+  }
+  .don-report-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .don-report-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .don-report-field label {
+    color: #374151;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .don-report-field input,
+  .don-report-field select {
+    width: 100%;
+    min-height: 36px;
+    padding: 8px 11px;
+    border: 1px solid #d1d5db;
+    border-radius: 0;
+    background: #ffffff;
+    color: #111827;
+    font: inherit;
+    font-size: 12.5px;
+    box-sizing: border-box;
+  }
+  .don-report-field input:focus,
+  .don-report-field select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  }
+  .don-report-field--wide { grid-column: 1 / -1; }
+  .don-report-submit {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    margin: 12px auto 0;
+  }
+  .dons-privacy-note,
+  .dons-admin-note {
+    margin: 8px 0 0;
+    color: #6b7280;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  /* ACCESSIBILITÉ */
+  .moyen-card:focus-within,
+  .payment-filter-btn:focus-visible,
+  .btn-copy:focus-visible,
+  .btn-whatsapp-don:focus-visible {
+    outline: 3px solid rgba(37,99,235,0.35);
+    outline-offset: 2px;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 640px) {
+    .dons-hero { padding: 22px 14px 14px; margin-bottom: 16px; }
+    .dons-hero h1 { font-size: 22px; letter-spacing: -0.5px; }
+    .dons-hero > p { font-size: 12.5px; }
+    .dons-verse { font-size: 13px; }
+
+    .dons-container { padding: 0 12px; margin-bottom: 22px; }
+
+    .don-category-row {
+      grid-template-columns: 28px 1fr;
+      gap: 12px;
+      padding: 10px 2px;
+    }
+    .don-category-icon { width: 28px; height: 28px; font-size: 20px; }
+    .don-category-content h3 { font-size: 14px; }
+    .don-category-content p { font-size: 12px; }
+
+    .canaux-title { font-size: 20px; letter-spacing: -0.5px; }
+    .canaux-subtitle { font-size: 12px; }
+
+    .moyens-grid { grid-template-columns: 1fr; gap: 10px; }
+    .moyen-header { padding: 12px 14px 9px; }
+    .moyen-body { padding: 10px 14px 12px; gap: 8px; }
+    .moyen-number { font-size: 14px; }
+    .btn-copy span { display: none; }
+    .btn-copy { padding: 8px 10px; }
+
+    .don-report-grid { grid-template-columns: 1fr; }
+    .don-report-field--wide { grid-column: auto; }
+
+    .dons-whatsapp-box { padding: 18px 14px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dons-page">
+
+<section class="dons-hero">
+  <h1>Soutenir l'Œuvre de Dieu</h1>
+  <p>Dîmes, Offrandes, Dons & Actions Caritatives</p>
+  <div class="dons-verse">
+    « Que chacun donne comme il l'a résolu en son cœur, sans tristesse ni contrainte ; car Dieu aime celui qui donne avec joie. »
+    <span class="verse-ref">2 Corinthiens 9:7</span>
+  </div>
+</section>
+
+<div class="dons-container">
+
+  <!-- 3 PILIERS — ICÔNES NUES -->
+  <div class="dons-categories-list">
+    <div class="don-category-row">
+      <div class="don-category-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+      <div class="don-category-content">
+        <h3>Dîmes & Offrandes</h3>
+        <p>Votre fidélité permet de soutenir les ministères pastoraux, les cultes et la vie quotidienne de l'église.</p>
+      </div>
+    </div>
+    <div class="don-category-row">
+      <div class="don-category-icon"><i class="fa-solid fa-trowel-bricks"></i></div>
+      <div class="don-category-content">
+        <h3>Construction & Équipement</h3>
+        <p>Participez à l'aménagement, l'équipement sonore, la projection et l'extension du temple Smyrne.</p>
+      </div>
+    </div>
+    <div class="don-category-row">
+      <div class="don-category-icon"><i class="fa-solid fa-users-rays"></i></div>
+      <div class="don-category-content">
+        <h3>Œuvres Sociales & Diaconie</h3>
+        <p>Assistance aux veuves, orphelins, nécessiteux et actions de charité évangélique dans la ville de Bukavu.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CANAUX -->
+  <section class="canaux-section">
+    <div class="canaux-header">
+      <span class="canaux-eyebrow">Coordonnées officielles</span>
+      <h2 class="canaux-title">Nos canaux de paiement</h2>
+      <p class="canaux-subtitle">Les coordonnées ci-dessous ont été vérifiées par l'église. Vérifiez toujours le bénéficiaire avant tout transfert.</p>
+    </div>
+
+    {% if moyens_dons %}
+      <div class="payment-filter-bar" role="group" aria-label="Filtrer les moyens de paiement">
+        <button type="button" class="payment-filter-btn active" data-channel="all" aria-pressed="true">
+          <i class="fa-solid fa-list-check" aria-hidden="true"></i> Tous
+        </button>
+        <button type="button" class="payment-filter-btn" data-channel="mobile_money" aria-pressed="false">
+          <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i> Mobile Money
+        </button>
+        <button type="button" class="payment-filter-btn" data-channel="banque" aria-pressed="false">
+          <i class="fa-solid fa-building-columns" aria-hidden="true"></i> Banques
+        </button>
+      </div>
+    {% endif %}
+
+    <div class="moyens-grid" id="moyensGrid">
+      {% if moyens_dons %}
+        {% for moyen in moyens_dons %}
+          <div class="moyen-card"
+               data-type="{{ moyen.type_moyen }}"
+               data-agency="{% if 'm-pesa' in moyen.nom|lower or 'vodacom' in moyen.nom|lower %}mpesa{% elif 'airtel' in moyen.nom|lower %}airtel{% elif 'orange' in moyen.nom|lower %}orange{% elif 'rawbank' in moyen.nom|lower %}rawbank{% elif 'tmb' in moyen.nom|lower %}tmb{% else %}other{% endif %}">
+            <div class="moyen-header">
+              <div class="agency-logo-container">
+                {% if moyen.get_logo_url %}
+                  <img src="{{ moyen.get_logo_url }}" alt="Logo {{ moyen.nom }}" class="agency-logo-img" loading="lazy" decoding="async">
+                {% else %}
+                  <span class="agency-logo-fallback"><i class="fa-solid fa-building-columns" aria-hidden="true"></i>{{ moyen.nom }}</span>
+                {% endif %}
+                {% if moyen.get_logo_url %}<span class="agency-name">{{ moyen.nom }}</span>{% endif %}
+              </div>
+              <span class="moyen-badge">{{ moyen.devise }}</span>
+            </div>
+
+            <div class="moyen-body">
+              <div class="moyen-number-block">
+                <div class="moyen-number-meta">
+                  <span class="moyen-field-label">{% if moyen.type_moyen == 'mobile_money' %}Numéro Mobile Money{% else %}Numéro de Compte{% endif %}</span>
+                  <span class="moyen-number" id="num-{{ moyen.pk }}">{{ moyen.numero_compte }}</span>
+                </div>
+                <button class="btn-copy" type="button" onclick="copierTexte('num-{{ moyen.pk }}', this)" title="Copier le numéro" aria-label="Copier {{ moyen.numero_compte }}">
+                  <i class="fa-regular fa-copy" aria-hidden="true"></i>
+                  <span>Copier</span>
+                </button>
+              </div>
+
+              <div class="moyen-beneficiaire">
+                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                <span><strong>Bénéficiaire :</strong> {{ moyen.intitule_compte }}</span>
+              </div>
+
+              {% if moyen.instructions %}
+                <div class="moyen-details">
+                  <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                  <strong>Procédure :</strong><br>
+                  {{ moyen.instructions|linebreaksbr }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="moyens-empty-state">
+          <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+          <h3>Coordonnées en cours de vérification</h3>
+          <p>Les moyens de paiement seront affichés ici dès que l'église aura confirmé leurs coordonnées. N'envoyez pas de fonds vers un numéro reçu par un canal non officiel.</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- WHATSAPP -->
+  <div class="dons-whatsapp-box">
+    <div><i class="fa-brands fa-whatsapp"></i></div>
+    <h3>Vous venez d'effectuer un don ?</h3>
+    <p>Préparez un message avec le montant et la référence de transaction si vous souhaitez signaler un transfert ou demander une prière.</p>
+    {% if whatsapp_number %}
+      <div class="don-report-form" id="donReportForm" data-whatsapp-number="{{ whatsapp_number }}" role="group" aria-label="Détails facultatifs du signalement">
+        <div class="don-report-grid">
+          <div class="don-report-field">
+            <label for="reportType">Type de don</label>
+            <select id="reportType">
+              <option value="Dîme">Dîme</option>
+              <option value="Offrande">Offrande</option>
+              <option value="Don spécial">Don spécial</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+          <div class="don-report-field">
+            <label for="reportAmount">Montant (facultatif)</label>
+            <input type="number" id="reportAmount" min="0" step="any" inputmode="decimal" placeholder="Ex. 20">
+          </div>
+          <div class="don-report-field">
+            <label for="reportCurrency">Devise</label>
+            <select id="reportCurrency">
+              <option value="USD">USD</option>
+              <option value="CDF">CDF</option>
+            </select>
+          </div>
+          <div class="don-report-field">
+            <label for="reportMethod">Canal utilisé</label>
+            <select id="reportMethod">
+              {% for moyen in moyens_dons %}
+                <option value="{{ moyen.nom }}">{{ moyen.nom }}</option>
+              {% empty %}
+                <option value="Canal non précisé">Canal non précisé</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="don-report-field don-report-field--wide">
+            <label for="reportReference">Référence de transaction (facultatif)</label>
+            <input type="text" id="reportReference" maxlength="100" autocomplete="off" placeholder="Référence figurant sur votre reçu">
+          </div>
+        </div>
+        <p class="dons-privacy-note">Le message est préparé sur WhatsApp et n'est pas envoyé par ce site. Ne communiquez jamais de code PIN, mot de passe ou code de validation.</p>
+        <button type="button" id="prepareDonReport" class="btn-whatsapp-don don-report-submit">
+          <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;" aria-hidden="true"></i>
+          <span>Préparer mon message WhatsApp</span>
+        </button>
+      </div>
+    {% else %}
+      <p class="dons-admin-note">Le contact WhatsApp de l'église n'est pas encore configuré. Utilisez uniquement les coordonnées officiellement communiquées par la paroisse.</p>
+    {% endif %}
+  </div>
+</div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // 1. COPIE DE NUMÉRO
+  function copierTexte(elementId, btn) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const texte = el.innerText.trim();
+
+    function confirmerCopie() {
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Copié !</span>';
+      btn.classList.add('copied');
+      if (window.showSmyrneToast) {
+        window.showSmyrneToast(`Numéro copié : ${texte}`, "fa-solid fa-circle-check");
+      }
+      setTimeout(function() {
+        btn.innerHTML = originalHtml;
+        btn.classList.remove('copied');
+      }, 2200);
+    }
+
+    function copierAvecFallback() {
+      const zoneCopie = document.createElement('textarea');
+      zoneCopie.value = texte;
+      zoneCopie.setAttribute('readonly', '');
+      zoneCopie.style.position = 'fixed';
+      zoneCopie.style.opacity = '0';
+      document.body.appendChild(zoneCopie);
+      zoneCopie.select();
+      const copieReussie = document.execCommand('copy');
+      zoneCopie.remove();
+      if (copieReussie) confirmerCopie();
+      else if (window.showSmyrneToast) {
+        window.showSmyrneToast('Copie impossible : sélectionnez le numéro manuellement.', 'fa-solid fa-circle-info');
+      }
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(texte).then(confirmerCopie).catch(copierAvecFallback);
+    } else {
+      copierAvecFallback();
+    }
+  }
+
+  // 2. FILTRAGE PAR CANAL
+  document.querySelectorAll('.payment-filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.payment-filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const channel = this.getAttribute('data-channel');
+      document.querySelectorAll('.payment-filter-btn').forEach(button => {
+        button.setAttribute('aria-pressed', button === this ? 'true' : 'false');
+      });
+      const cards = document.querySelectorAll('.moyen-card');
+      cards.forEach(card => {
+        if (channel === 'all' || card.getAttribute('data-type') === channel) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // 3. MESSAGE WHATSAPP
+  const formulaireDon = document.getElementById('donReportForm');
+  const boutonMessageDon = document.getElementById('prepareDonReport');
+  if (formulaireDon && boutonMessageDon) {
+    boutonMessageDon.addEventListener('click', function() {
+      const type = document.getElementById('reportType').value;
+      const montant = document.getElementById('reportAmount').value.trim();
+      const devise = document.getElementById('reportCurrency').value;
+      const canal = document.getElementById('reportMethod').value;
+      const reference = document.getElementById('reportReference').value.trim();
+      const lignes = [
+        'Bonjour, je souhaite signaler un don à la 5e CELPA Smyrne.',
+        `Type : ${type}`,
+        `Canal : ${canal}`,
+      ];
+
+      if (montant) lignes.push(`Montant : ${montant} ${devise}`);
+      if (reference) lignes.push(`Référence de transaction : ${reference}`);
+      lignes.push('Merci de confirmer la réception. Je ne transmets aucun code PIN ni code secret.');
+
+      const numero = formulaireDon.dataset.whatsappNumber;
+      const url = `https://wa.me/${numero}?text=${encodeURIComponent(lignes.join('\n'))}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    });
+  }
+</script>
+{% endblock %}

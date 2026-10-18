@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Biographie du Pasteur Victor Nabino — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/biographie.css' %}">
+{% endblock %}
+
+{% block content %}
+  <section class="bio-hero fade-in">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <img src="{% static 'images/notre-pasteur.jpeg' %}" alt="Pasteur Victor Nabino" class="hero-image">
+      <h1>Pasteur Victor Nabino</h1>
+      <div class="bio-titre">Visionnaire et Pasteur de la 5e CELPA SMYRNE</div>
+      <p>Homme de Dieu, enseignant de la Parole et bâtisseur d'une communauté chrétienne vivante à Bukavu.</p>
+    </div>
+  </section>
+
+  <!-- BIOGRAPHIE COMPLETE -->
+  <section class="biographie-section fade-in">
+    {% if autres_blocs %}
+      {% for bloc in autres_blocs %}
+        <div class="bio-block {% if forloop.counter|divisibleby:2 %}reverse{% endif %}">
+          <div class="bio-text">
+            <h3>{{ bloc.titre }}</h3>
+            {{ bloc.texte|safe|linebreaks }}
+          </div>
+          {% if bloc.image %}
+            <div class="bio-image" style="background-image: url('{{ bloc.image.url }}');"></div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <!-- Bloc 1 : Enfance -->
+      <div class="bio-block">
+        <div class="bio-text">
+          <h3>Enfance et conversion</h3>
+          <p>Victor Nabino est né dans une famille chrétienne de la ville de Bukavu, en République Démocratique du Congo. Dès son plus jeune âge, il fut imprégné des valeurs de la foi chrétienne par ses parents qui étaient des membres actifs de l'Église.</p>
+          <p>À l'âge de 15 ans, il vécut une expérience profonde de conversion personnelle lors d'une campagne d'évangélisation. C'est à ce moment qu'il décida de consacrer sa vie au service de Dieu, une décision qui allait marquer tout son parcours.</p>
+        </div>
+        <div class="bio-image" style="background-image: url('{% static 'images/enfance.jpeg' %}');"></div>
+      </div>
+
+      <!-- Bloc 2 : Formation -->
+      <div class="bio-block reverse">
+        <div class="bio-text">
+          <h3>Formation et études</h3>
+          <p>Après sa conversion, Victor Nabino ressentit un appel clair au ministère pastoral. Il entreprit des études en Théologie à l'Université de Bukavu, où il obtint une licence en Théologie Pratique.</p>
+          <p>Passionné par l'enseignement biblique, il poursuivit des études avancées et obtint un Doctorat en Théologie, spécialisé dans l'exégèse du Nouveau Testament et l'herméneutique.</p>
+        </div>
+        <div class="bio-image" style="background-image: url('{% static 'images/formation.jpeg' %}');"></div>
+      </div>
+
+      <!-- Bloc 3 : Fondation -->
+      <div class="bio-block dark">
+        <div class="bio-text">
+          <h3>Fondation et Vision</h3>
+          <p>Animé par une vision claire reçue de Dieu, Pasteur Victor Nabino s'est consacré à l'implantation et au développement de la 5e CELPA Smyrne dans la ville de Bukavu.</p>
+          <p>Ce qui n'était au départ qu'un petit noyau de familles dévouées est devenu aujourd'hui une assemblée rayonnante réunissant de nombreux fidèles chaque semaine dans la prière et la louange.</p>
+        </div>
+        <div class="bio-image" style="background-image: url('{% static 'images/eglise-sale.jpeg' %}');"></div>
+      </div>
+
+      <!-- Bloc 4 : Ministère -->
+      <div class="bio-block reverse">
+        <div class="bio-text">
+          <h3>Ministère et engagement pastoral</h3>
+          <p>Au-delà de la prédication dominicale, Pasteur Victor est un homme de prière et de proximité. Il supervise avec dévouement les différents départements de l'église, la formation des disciples, l'évangélisation et l'entraide communautaire.</p>
+          <p>Il investit une part importante de son temps dans l'accompagnement des familles, le mentorat de la jeunesse et l'affermissement des croyants dans la vérité biblique.</p>
+        </div>
+        <div class="bio-image" style="background-image: url('{% static 'images/ministère.jpg' %}');"></div>
+      </div>
+
+      <!-- Bloc 5 : Enseignement -->
+      <div class="bio-block">
+        <div class="bio-text">
+          <h3>Enseignement et Publications</h3>
+          <p>Pasteur Victor est un enseignant passionné par la formation des disciples et la transmission de saines doctrines bibliques :</p>
+          <ul style="margin-left: 20px; line-height: 1.8;">
+            <li><strong>La puissance de la foi agissante</strong></li>
+            <li><strong>Vivre dans la grâce et la fidélité de Dieu</strong></li>
+            <li><strong>Le réveil spirituel au sein de la famille chrétienne</strong></li>
+            <li><strong>Former une génération consacrée à Christ</strong></li>
+          </ul>
+        </div>
+        <div class="bio-image" style="background-image: url('{% static 'images/enseignement.jpeg' %}');"></div>
+      </div>
+
+      <!-- Bloc 6 : Famille -->
+      <div class="bio-block reverse dark">
+        <div class="bio-text">
+          <h3>Vie familiale et héritage</h3>
+          <p>Pasteur Victor Nabino est marié et père de famille. Entouré de son épouse et de ses enfants qui servent activement dans la maison de Dieu, il témoigne de l'importance capitale du foyer chrétien comme premier sanctuaire de foi.</p>
+        </div>
+        <div class="bio-image" style="background-image: url('{% static 'images/famille.jpeg' %}');"></div>
+      </div>
+    {% endif %}
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="timeline-section fade-in">
+    <div class="section-header">
+      <h2>Parcours chronologique</h2>
+      <p>Les grandes étapes de la vie et du ministère du Pasteur Victor Nabino</p>
+    </div>
+    <div class="timeline-grid">
+      {% if timeline %}
+        {% for item in timeline %}
+          <div class="timeline-item">
+            <div class="annee">{{ item.date_evenement }}</div>
+            <h4>{{ item.titre }}</h4>
+            <p>{{ item.texte|striptags }}</p>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="timeline-item">
+          <div class="annee">1972</div>
+          <h4>Naissance</h4>
+          <p>Naissance à Bukavu, dans une famille chrétienne.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="annee">1987</div>
+          <h4>Conversion</h4>
+          <p>Engagement personnel pour Christ lors d'une campagne d'évangélisation.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="annee">1995</div>
+          <h4>Études Théologiques</h4>
+          <p>Formation pastorale et approfondissement biblique universitaire.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="annee">2000</div>
+          <h4>Ministère Pastoral</h4>
+          <p>Consécration au ministère pastoral et leadership d'église.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="annee">2015</div>
+          <h4>Direction de Smyrne</h4>
+          <p>Pasteur Principal et visionnaire de la 5e CELPA Smyrne.</p>
+        </div>
+        <div class="timeline-item">
+          <div class="annee">Aujourd'hui</div>
+          <h4>Rayonnement</h4>
+          <p>Impact grandissant de l'Évangile à Bukavu et au-delà.</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

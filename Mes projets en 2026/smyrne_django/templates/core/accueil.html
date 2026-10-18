@@ -1,0 +1,687 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Accueil — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+  <!-- HERO CARROUSEL -->
+  <section class="hero-carousel" id="accueil">
+    <div class="hero-slides" id="heroSlides">
+      {% if slides %}
+        {% for slide in slides %}
+          <div class="hero-slide" style="background-image: url('{% if slide.image %}{{ slide.image.url }}{% else %}{% static 'images/adoration.jpg' %}{% endif %}');">
+            <div class="slide-content">
+              <h1>{{ slide.titre|safe }}</h1>
+              {% if slide.sous_titre %}<h2>{{ slide.sous_titre }}</h2>{% endif %}
+              <div class="hero-buttons">
+                {% if slide.lien_bouton %}
+                  <a href="{{ slide.lien_bouton }}" class="btn btn-cyan">{{ slide.texte_bouton|default:"Découvrir" }}</a>
+                {% else %}
+                  <a href="{% url 'cultes:liste' %}" class="btn btn-cyan">Participer</a>
+                {% endif %}
+                <a href="{% url 'priere:index' %}" class="btn btn-outline">Nous rejoindre</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="hero-slide" style="background-image: url('{% static 'images/adoration.jpg' %}');">
+          <div class="slide-content">
+            <h1>Louange <span>et Adoration</span></h1>
+            <h2>Élevez vos voix vers le ciel</h2>
+            <p>Venez vivre des moments intenses de louange et d'adoration dans la présence de Dieu, chaque dimanche.</p>
+            <div class="hero-buttons">
+              <a href="{% url 'cultes:liste' %}" class="btn btn-cyan">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                Participer
+              </a>
+              <a href="{% url 'priere:index' %}" class="btn btn-outline">Nous rejoindre</a>
+            </div>
+          </div>
+        </div>
+        <div class="hero-slide" style="background-image: url('{% static 'images/notre-eglise.jpeg' %}');">
+          <div class="slide-content">
+            <h1>EGLISE 5ᵉ CELPA SMYRNE</h1>
+            <h2>La maison de Dieu...</h2>
+            <p>Bienvenue à l'Église 5e CELPA Smyrne. Un lieu où nous grandissons dans la foi, partageons l'amour de Christ et avançons ensemble dans l'espérance.</p>
+            <div class="hero-buttons">
+              <a href="{% url 'cultes:liste' %}" class="btn btn-cyan">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                Regarder le culte
+              </a>
+              <a href="{% url 'priere:index' %}" class="btn btn-outline">Nous rejoindre</a>
+            </div>
+          </div>
+        </div>
+        <div class="hero-slide" style="background-image: url('{% static 'images/union.jpg' %}');">
+          <div class="slide-content">
+            <h1>Communauté <span>et Fraternité</span></h1>
+            <h2>Unis dans l'amour de Christ</h2>
+            <p>Une famille spirituelle où chacun trouve sa place, grandit dans la foi et partage les joies de la vie chrétienne.</p>
+            <div class="hero-buttons">
+              <a href="{% url 'evenements:liste' %}" class="btn btn-cyan">Découvrir</a>
+              <a href="{% url 'priere:index' %}" class="btn btn-outline">Nous rejoindre</a>
+            </div>
+          </div>
+        </div>
+        <div class="hero-slide" style="background-image: url('{% static 'images/jeunesse.jpg' %}');">
+          <div class="slide-content">
+            <h1>Jeunesse <span>Dynamique</span></h1>
+            <h2>L'avenir de l'Église</h2>
+            <p>Les jeunes de la 5e CELPA Smyrne sont engagés, passionnés et prêts à porter la flamme de l'Évangile.</p>
+            <div class="hero-buttons">
+              <a href="{% url 'galerie:liste' %}" class="btn btn-cyan">Voir la galerie</a>
+              <a href="#contact" class="btn btn-outline">Nous rejoindre</a>
+            </div>
+          </div>
+        </div>
+        <div class="hero-slide" style="background-image: url('{% static 'images/mission.jpg' %}');">
+          <div class="slide-content">
+            <h1>Mission <span>et Espérance</span></h1>
+            <h2>Annoncer l'Évangile au monde</h2>
+            <p>Nous croyons en une Église missionnaire qui transforme les vies par la puissance de la Parole et du Saint-Esprit.</p>
+            <div class="hero-buttons">
+              <a href="{% url 'priere:index' %}" class="btn btn-cyan">Prier avec nous</a>
+              <a href="#contact" class="btn btn-outline">Nous rejoindre</a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    <div class="carousel-dots">
+      <button class="carousel-dot active" aria-label="Slide 1"></button>
+      <button class="carousel-dot" aria-label="Slide 2"></button>
+      <button class="carousel-dot" aria-label="Slide 3"></button>
+      <button class="carousel-dot" aria-label="Slide 4"></button>
+      <button class="carousel-dot" aria-label="Slide 5"></button>
+    </div>
+  </section>
+
+  <!-- INFO BANNER -->
+  <section class="info-banner">
+    <div class="info-left">
+      <div class="info-icon-circle">i</div>
+      <div>
+        <h3 class="info-title">info : IMPORTANT</h3>
+        <p class="info-subtitle">Partagez votre requête de prière et unissons-nous dans la foi, car la prière fervente du juste a une grande efficacité.</p>
+      </div>
+    </div>
+    <a href="{% url 'priere:index' %}" class="btn-prayer">
+      MA REQUÊTE DE PRIÈRE
+      <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    </a>
+  </section>
+
+  <section class="home-feed" id="fil-actualites" data-home-feed data-user-key="{{ user.pk|default_if_none:'' }}" aria-labelledby="homeFeedTitle">
+    
+    <div class="home-feed-list" data-feed-items>
+      {% include 'core/includes/fil_actualites_items.html' %}
+    </div>
+    <p class="home-feed-status" data-feed-status role="status" aria-live="polite"></p>
+  </section>
+
+  {% comment %}
+  Sections historiques conservées dans le dépôt; leurs routes dédiées restent accessibles via la navigation.
+
+  <!-- VIE DE L'ÉGLISE -->
+  <section class="church-life-section fade-in" id="vie-eglise">
+    <div class="church-life-row">
+      <div class="content-left">
+        <h2 class="section-title">Vie de l'église</h2>
+        <div class="section-description">
+          <p>L'Église 5e CELPA Smyrne est une communauté chrétienne fondée sur la foi en Jésus-Christ et l'enseignement de la Parole de Dieu.</p>
+          <p>Au fil des années, elle s'est développée autour d'une même vision : annoncer l'Évangile, fortifier les croyants et servir la communauté. Elle œuvre à travers les cultes, la prière, l'enseignement biblique et différentes actions en faveur des familles et de la jeunesse.</p>
+          <p>Aujourd'hui, la 5e CELPA Smyrne poursuit sa mission avec foi et espérance, en plaçant Christ au centre de sa vie et de son engagement.</p>
+        </div>
+      </div>
+      <div class="content-right">
+        <div class="image-container">
+          <img src="{% static 'images/notre-eglise.jpeg' %}" alt="Bâtiment Église CELPA">
+        </div>
+      </div>
+    </div>
+    <div class="buttons-group-after">
+      <a href="{% url 'histoire:index' %}" class="btn-black">En savoir plus</a>
+      <a href="{% url 'ministeres:index' %}" class="btn-outline-dark">
+        <span>Voir Nos Ministères et Départements</span>
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor;"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- SECTION ACTUALITÉS - BANNIÈRE CTA -->
+  <section class="section-actu-cta fade-in">
+    <div class="actu-box">
+      <div class="actu-left">
+        <svg viewBox="0 0 24 24">
+          <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 12H5V7h14v8zM7 9h5v2H7z"/>
+          <path d="M7 11h5v2H7z"/>
+        </svg>
+        <div>
+          <h4>Actualités</h4>
+          <p>Suivez l'actualité de notre communauté</p>
+        </div>
+      </div>
+      <a href="{% url 'articles:liste' %}" class="btn-actu-all">
+        <span>Voir tout</span>
+        <svg viewBox="0 0 24 24">
+          <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- VISIONNAIRE -->
+  <section class="visionary-section fade-in" id="visionnaire">
+    <div class="visionary-container">
+      <div class="visionary-row">
+        <div class="visionary-image-wrapper">
+          <img src="{% if pasteur.photo %}{{ pasteur.photo.url }}{% else %}{% static 'images/notre-pasteur.jpeg' %}{% endif %}" alt="{{ pasteur.prenom }} {{ pasteur.nom }}">
+        </div>
+        <div class="visionary-content">
+          <div class="visionary-text">
+            <h2 class="visionary-title-main">Visionnaire de la Communauté<br>{{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}</h2>
+            <p>Le Révérend Docteur <strong>{% if pasteur %}{{ pasteur.prenom }} {{ pasteur.nom }}{% else %}Nabino Victor{% endif %}</strong> est le Pasteur et visionnaire de l'Église 5e CELPA Smyrne. À travers son ministère, il œuvre à l'édification spirituelle de la communauté et à la transmission de la Parole de Dieu.</p>
+            <p>Homme de foi et de conviction, il porte une vision fondée sur l'Évangile, la prière, la formation et le service.</p>
+          </div>
+          <a href="{% url 'histoire:biographie' %}" class="btn-bio">
+            Biographie
+            <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CULTES -->
+  <section class="section-cultes fade-in" id="cultes">
+    <div class="section-header">
+      <h2>Nos Cultes et Programmes</h2>
+      <p>Rejoignez-nous pour célébrer, adorer et grandir ensemble dans la présence de Dieu</p>
+    </div>
+    <div class="events-list">
+      {% if cultes %}
+        {% for culte in cultes %}
+          <div class="event-card">
+            <div class="event-date-side">
+              {% if culte.est_en_direct %}
+                <div class="event-badge-upcoming" style="background:#dc2626;">🔴 En Direct</div>
+              {% else %}
+                <div class="event-badge-upcoming">{{ culte.get_type_culte_display }}</div>
+              {% endif %}
+              <div class="event-date-content">
+                <div class="event-day" style="font-size:24px; text-transform:uppercase;">{{ culte.get_jour_display|slice:":3" }}</div>
+                <div class="event-month"><strong>{{ culte.get_jour_display }}</strong></div>
+              </div>
+            </div>
+            <div class="event-banner-img">
+              <img src="{% if culte.image %}{{ culte.image.url }}{% else %}{% static 'images/louange.jpg' %}{% endif %}" alt="{{ culte.titre }}">
+            </div>
+            <div class="event-details">
+              <h3 class="event-title">{{ culte.titre }}</h3>
+              <div class="event-meta">
+                <span><i class="fa-regular fa-calendar"></i> Chaque {{ culte.get_jour_display }}</span>
+                <span><i class="fa-regular fa-clock"></i> {{ culte.heure_debut|time:"H\hi" }}{% if culte.heure_fin %} - {{ culte.heure_fin|time:"H\hi" }}{% endif %}</span>
+                <span><i class="fa-solid fa-location-dot"></i> {{ culte.lieu|default:"Sanctuaire CELPA SMYRNE, Bukavu" }}</span>
+              </div>
+              <div class="event-actions">
+                {% if culte.est_en_direct and culte.en_direct_url %}
+                  <a href="{{ culte.en_direct_url }}" target="_blank" rel="noopener" class="btn-green" style="background:#dc2626;">
+                    <i class="fa-solid fa-broadcast-tower"></i> Suivre en direct
+                  </a>
+                {% else %}
+                  <a href="{% url 'cultes:liste' %}" class="btn-green">
+                    Participer
+                    <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+                  </a>
+                {% endif %}
+                <span class="price-tag">Entrée Libre</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="event-card">
+          <div class="event-date-side">
+            <div class="event-badge-upcoming">Culte Dominical</div>
+            <div class="event-date-content">
+              <div class="event-day" style="font-size:24px;">DIM</div>
+              <div class="event-month"><strong>Dimanche</strong></div>
+            </div>
+          </div>
+          <div class="event-banner-img">
+            <img src="{% static 'images/louange.jpg' %}" alt="Culte Dominical">
+          </div>
+          <div class="event-details">
+            <h3 class="event-title">Culte d'Adoration & Prédication</h3>
+            <div class="event-meta">
+              <span><i class="fa-regular fa-calendar"></i> Chaque Dimanche</span>
+              <span><i class="fa-regular fa-clock"></i> 09H00 - 12H00</span>
+              <span><i class="fa-solid fa-location-dot"></i> Sanctuaire CELPA SMYRNE, Bukavu</span>
+            </div>
+            <div class="event-actions">
+              <a href="{% url 'cultes:liste' %}" class="btn-green">
+                Participer
+                <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+              </a>
+              <span class="price-tag">Entrée Libre</span>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    <a href="{% url 'cultes:liste' %}" class="btn-all-events">
+      Voir tous les cultes
+      <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+    </a>
+  </section>
+
+  <!-- PRÉDICATIONS -->
+  <section class="section-predications fade-in" id="predications">
+    <div class="section-header">
+      <h2>Messages qui Transforment</h2>
+      <p>Écoutez ou regardez nos dernières prédications</p>
+    </div>
+    <div class="predications-grid">
+      {% if predications %}
+        {% for predication in predications %}
+          <div class="predication-card">
+            <div class="predication-thumb">
+              <img src="{% if predication.image %}{{ predication.image.url }}{% else %}{% static 'images/predication.jpeg' %}{% endif %}" alt="{{ predication.titre }}">
+              {% if predication.video_url or predication.video_fichier %}
+                <div class="video-duration"><i class="fa-solid fa-play"></i> Vidéo</div>
+              {% endif %}
+            </div>
+            <div class="predication-body">
+              <h4 class="predication-card-title">{{ predication.titre }}</h4>
+              <div class="predication-author-date">
+                <span><i class="fa-regular fa-user"></i> {{ predication.predicateur }}</span>
+                {% if predication.date_publication %}
+                  <span><i class="fa-regular fa-calendar"></i> {{ predication.date_publication|date:"d M Y" }}</span>
+                {% endif %}
+              </div>
+              <p class="predication-excerpt">{{ predication.description|truncatewords:15 }}</p>
+              <div class="predication-actions">
+                <a href="{% url 'predications:detail' predication.slug %}" class="btn-listen">
+                  <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  Écouter / Voir
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="predication-card">
+          <div class="predication-thumb">
+            <img src="{% static 'images/predication.jpeg' %}" alt="Prédication">
+            <div class="video-duration"><i class="fa-solid fa-play"></i> 45:01</div>
+          </div>
+          <div class="predication-body">
+            <h4 class="predication-card-title">La Puissance de la Foi</h4>
+            <div class="predication-author-date">
+              <span><i class="fa-regular fa-user"></i> Pasteur Victor NABINO</span>
+              <span><i class="fa-regular fa-calendar"></i> 15 Août 2026</span>
+            </div>
+            <p class="predication-excerpt">Découvrez comment la foi peut déplacer des montagnes dans votre vie quotidienne.</p>
+            <div class="predication-actions">
+              <a href="{% url 'predications:liste' %}" class="btn-listen">
+                <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                Écouter
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    <a href="{% url 'predications:liste' %}" class="btn-all-predications">
+      Voir toutes les prédications
+      <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+    </a>
+  </section>
+
+  <!-- ACTUALITÉS (HOME) -->
+  <section class="section-actualites-home fade-in" id="actualites-home">
+    <div class="section-header">
+      <h2>Actualités</h2>
+      <p>Restez informé des dernières nouvelles de notre communauté</p>
+    </div>
+    {% if articles %}
+      {% for article in articles|slice:":1" %}
+        <div class="actualite-home-card">
+          <div class="actualite-home-img">
+            <img src="{% if article.image %}{{ article.image.url }}{% elif article.image_principale %}{{ article.image_principale.url }}{% else %}{% static 'images/Sunday Service Digital Display Template.jpeg' %}{% endif %}" alt="{{ article.titre }}">
+          </div>
+          <div class="actualite-home-content">
+            <span class="badge-home">{{ article.categorie.nom|default:"Actualité" }}</span>
+            <h3>{{ article.titre }}</h3>
+            <div class="home-meta">
+              <span><i class="fa-regular fa-calendar"></i> {{ article.date_publication|date:"d M Y" }}</span>
+              <span>
+                <i class="fa-regular fa-user"></i>
+                {{ article.auteur.username|default:"Admin" }}
+                {% if article.auteur.is_staff %}
+                  <span class="verified-badge" title="Compte certifié administrateur"><i class="fa-solid fa-check"></i></span>
+                {% endif %}
+              </span>
+            </div>
+            <p>{{ article.resume|default:article.corps|striptags|truncatewords:25 }}</p>
+            <a href="{% url 'articles:detail' article.slug %}" class="btn-voir-plus-actu">
+              Lire l'article
+              <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="actualite-home-card">
+        <div class="actualite-home-img">
+          <img src="{% static 'images/Sunday Service Digital Display Template.jpeg' %}" alt="Actualité">
+        </div>
+        <div class="actualite-home-content">
+          <span class="badge-home">Événement</span>
+          <h3>Conférence annuelle 2026 : "Ravive ton premier amour"</h3>
+          <div class="home-meta">
+            <span><i class="fa-regular fa-calendar"></i> 15 Mars 2026</span>
+            <span><i class="fa-regular fa-user"></i> Pasteur Victor</span>
+          </div>
+          <p>Du 10 au 12 avril 2026, nous vivrons ensemble trois jours de renouveau spirituel avec des invités exceptionnels. Des sessions de prière, des enseignements et des moments de louange sont au programme.</p>
+          <a href="{% url 'articles:liste' %}" class="btn-voir-plus-actu">
+            Voir toutes les actualités
+            <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+
+  <!-- ÉVÉNEMENTS -->
+  <section class="section-evenements fade-in" id="evenements">
+    <div class="section-header">
+      <h2>Vivez des Moments Forts</h2>
+      <p>Participez aux événements de notre communauté</p>
+    </div>
+    <div class="events-list">
+      {% if evenements %}
+        {% for evt in evenements %}
+          <div class="event-card">
+            <div class="event-date-side">
+              <div class="event-badge-upcoming">À venir</div>
+              <div class="event-date-content">
+                <div class="event-day">{{ evt.date_debut|date:"d" }}</div>
+                <div class="event-month">{{ evt.date_debut|date:"b" }} <br><strong>{{ evt.date_debut|date:"Y" }}</strong></div>
+              </div>
+            </div>
+            <div class="event-banner-img">
+              <img src="{% if evt.image %}{{ evt.image.url }}{% else %}{% static 'images/evenement1.jpeg' %}{% endif %}" alt="{{ evt.titre }}">
+            </div>
+            <div class="event-details">
+              <h3 class="event-title">{{ evt.titre }}</h3>
+              <div class="event-meta">
+                <span><i class="fa-regular fa-clock"></i> {{ evt.date_debut|time:"H\hi" }}</span>
+                <span><i class="fa-solid fa-location-dot"></i> {{ evt.lieu|default:"5e CELPA Smyrne, Bukavu" }}</span>
+              </div>
+              <div class="event-actions">
+                <a href="{% url 'evenements:detail' evt.slug %}" class="btn-green">
+                  M'inscrire
+                  <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+                </a>
+                <span class="price-tag">Entrée Libre</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="event-card">
+          <div class="event-date-side">
+            <div class="event-badge-upcoming">À venir</div>
+            <div class="event-date-content">
+              <div class="event-day">09</div>
+              <div class="event-month">Août <br><strong>2026</strong></div>
+            </div>
+          </div>
+          <div class="event-banner-img">
+            <img src="{% static 'images/evenement1.jpeg' %}" alt="GAEL CELEBRATION">
+          </div>
+          <div class="event-details">
+            <h3 class="event-title">GAEL CELEBRATION 2026</h3>
+            <div class="event-meta">
+              <span><i class="fa-regular fa-clock"></i> 09H-12H</span>
+              <span><i class="fa-solid fa-location-dot"></i> 5e CELPA Smyrne, Bukavu</span>
+            </div>
+            <div class="event-actions">
+              <a href="{% url 'evenements:liste' %}" class="btn-green">
+                M'inscrire
+                <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+              </a>
+              <span class="price-tag">Entrée Libre</span>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    <a href="{% url 'evenements:liste' %}" class="btn-all-events">
+      Voir tous les événements
+      <svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+    </a>
+  </section>
+
+  <!-- GALERIE -->
+  <section class="section-galerie fade-in" id="galerie">
+    <div class="section-header">
+      <h2>Notre Galerie</h2>
+      <p>Média et moments forts</p>
+    </div>
+    <div class="gallery-grid" id="galleryGrid">
+      {% if photos %}
+        {% for photo in photos %}
+          <div class="gallery-item" data-badge="{{ photo.categorie.nom|default:photo.titre }}">
+            <img src="{{ photo.image.url }}" alt="{{ photo.titre }}">
+            <span class="gallery-badge">{{ photo.categorie.nom|default:photo.titre }}</span>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="gallery-item" data-badge="Culte de réveil">
+          <img src="{% static 'images/culte6.jpg' %}" alt="Galerie 1">
+          <span class="gallery-badge">Culte de réveil</span>
+        </div>
+        <div class="gallery-item" data-badge="Louange">
+          <img src="{% static 'images/culte5.jpg' %}" alt="Galerie 2">
+          <span class="gallery-badge">Louange</span>
+        </div>
+        <div class="gallery-item" data-badge="Adoration">
+          <img src="{% static 'images/culte4.jpg' %}" alt="Galerie 3">
+          <span class="gallery-badge">Adoration</span>
+        </div>
+        <div class="gallery-item" data-badge="Jeunesse">
+          <img src="{% static 'images/culte3.jpg' %}" alt="Galerie 4">
+          <span class="gallery-badge">Jeunesse</span>
+        </div>
+        <div class="gallery-item" data-badge="Famille">
+          <img src="{% static 'images/culte2.jpg' %}" alt="Galerie 5">
+          <span class="gallery-badge">Famille</span>
+        </div>
+        <div class="gallery-item" data-badge="Mission">
+          <img src="{% static 'images/culte1.jpg' %}" alt="Galerie 6">
+          <span class="gallery-badge">Mission</span>
+        </div>
+      {% endif %}
+    </div>
+    <a href="{% url 'galerie:liste' %}">
+      <button class="btn-more-media" type="button">Voir plus dans la galerie</button>
+    </a>
+    <div class="stats-banner">
+      {% if stats %}
+        {% for stat in stats %}
+          <div>
+            <div class="stat-number">{{ stat.valeur }}</div>
+            <div class="stat-label">{{ stat.libelle }}</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div>
+          <div class="stat-number">+1000</div>
+          <div class="stat-label">Membres</div>
+        </div>
+        <div>
+          <div class="stat-number">+10</div>
+          <div class="stat-label">Ministères</div>
+        </div>
+        <div>
+          <div class="stat-number">+250</div>
+          <div class="stat-label">Prédications</div>
+        </div>
+        <div>
+          <div class="stat-number">+10 000</div>
+          <div class="stat-label">Vies touchées</div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- PRIÈRE -->
+  <section class="section-priere fade-in" id="priere">
+    <div class="priere-content">
+      <h2 class="priere-title">Besoin de Prière ?</h2>
+      <p class="priere-subtitle">Nous croyons en la puissance de la prière. Confiez-nous vos sujets et nous prierons pour vous.</p>
+      <div class="priere-buttons">
+        <a href="{% url 'priere:index' %}" class="btn-blue">
+          <svg viewBox="0 0 24 24"><path d="M4 20h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2zM20 6l-8 5-8-5h16z"/></svg>
+          Envoyer ma demande
+        </a>
+        <a href="{% url 'priere:index' %}" class="btn-light">
+          <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+          Envoyer un témoignage
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TÉMOIGNAGES -->
+  <section class="section-temoignages fade-in">
+    <div class="section-header">
+      <h2>Ce que disent nos fidèles</h2>
+      <p>Découvrez ce que Dieu fait au milieu de nous</p>
+    </div>
+    <div class="testimonials-grid">
+      {% if temoignages %}
+        {% for t in temoignages %}
+          <div class="testimonial-card">
+            <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+            <p class="testimonial-quote">"{{ t.texte }}"</p>
+            <div class="testimonial-user">
+              {% if t.photo %}
+                <img src="{{ t.photo.url }}" alt="{{ t.nom }}" class="user-avatar">
+              {% else %}
+                <div class="user-avatar" style="background:#0284c7;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;">{{ t.nom|slice:":1" }}</div>
+              {% endif %}
+              <div>
+                <div class="user-info-name">{{ t.nom }}</div>
+                <div class="user-info-sub">{{ t.profession|default:"Fidèle de Smyrne" }}</div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="testimonial-card">
+          <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+          <p class="testimonial-quote">"Une communauté accueillante et un message qui fortifie ma foi chaque semaine."</p>
+          <div class="testimonial-user">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200" alt="Marie Claire" class="user-avatar">
+            <div>
+              <div class="user-info-name">MARIE Claire</div>
+              <div class="user-info-sub">Membre depuis 2020</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+          <p class="testimonial-quote">"J'ai trouvé une vraie famille spirituelle à Smyrne. La prière y est vivante !"</p>
+          <div class="testimonial-user">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200" alt="Jean Luc" class="user-avatar">
+            <div>
+              <div class="user-info-name">JEAN Luc</div>
+              <div class="user-info-sub">Membre depuis 2018</div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-section fade-in" id="contact">
+    <div class="section-header" style="text-align:center;">
+      <h2>Contactez-nous</h2>
+      <p>Pour toute question ou demande de prière, n'hésitez pas à nous écrire</p>
+    </div>
+    <div class="contact-wrapper">
+      <div class="contact-info">
+        <h3>Nous sommes à votre écoute</h3>
+        <p>Que vous ayez une question sur nos cultes, une demande de prière ou que vous souhaitiez rejoindre un ministère, notre équipe est disponible pour vous répondre.</p>
+        {% if parametres_site.telephone %}
+        <div class="contact-detail">
+          <i class="fa-solid fa-phone"></i>
+          <span>{{ parametres_site.telephone }}</span>
+        </div>
+        {% endif %}
+        {% if parametres_site.email %}
+        <div class="contact-detail">
+          <i class="fa-solid fa-envelope"></i>
+          <span>{{ parametres_site.email }}</span>
+        </div>
+        {% endif %}
+        <div class="contact-detail">
+          <i class="fa-solid fa-location-dot"></i>
+          <span>{{ parametres_site.adresse|default:"Avenue de l'Église, Ville de Bukavu, RDC" }}</span>
+        </div>
+        {% if parametres_site.whatsapp %}
+        <a href="https://wa.me/{{ parametres_site.whatsapp|cut:' '|cut:'+' }}?text=Bonjour%2C%20je%20souhaite%20avoir%20plus%20d%27informations" target="_blank" rel="noopener" class="btn-whatsapp-contact">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+          Contactez-nous sur WhatsApp
+        </a>
+        {% endif %}
+      </div>
+      <div class="contact-form">
+        <h3>Envoyez-nous un message</h3>
+        <p class="form-subtitle">Nous vous répondrons dans les plus brefs délais</p>
+        <form id="contactForm" onsubmit="event.preventDefault(); alert('Merci pour votre message ! Notre secrétariat vous répondra très bientôt.');">
+          <div class="form-group">
+            <label for="nom">Nom complet</label>
+            <input type="text" id="nom" placeholder="Votre nom" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Adresse email</label>
+            <input type="email" id="email" placeholder="votre@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="telephone">Téléphone</label>
+            <input type="tel" id="telephone" placeholder="+243 XX XXX XXXX">
+          </div>
+          <div class="form-group">
+            <label for="sujet">Sujet</label>
+            <select id="sujet">
+              <option value="">Sélectionnez un sujet</option>
+              <option value="culte">Information sur un culte</option>
+              <option value="priere">Demande de prière</option>
+              <option value="ministere">Rejoindre un ministère</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" placeholder="Votre message..." required></textarea>
+          </div>
+          <button type="submit" class="btn-submit">
+            <svg viewBox="0 0 24 24"><path d="M4 20h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2zM20 6l-8 5-8-5h16z"/></svg>
+            Envoyer le message
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+  {% endcomment %}
+{% endblock %}

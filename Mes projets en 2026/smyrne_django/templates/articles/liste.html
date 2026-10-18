@@ -1,0 +1,508 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Actualités — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/actualites.css' %}">
+<style>
+  /* ============================================================
+     ÉCHELLE TYPOGRAPHIQUE
+     ============================================================ */
+  :root {
+    --fs-h1: 30px;
+    --fs-h2: 22px;
+    --fs-title: 16px;
+    --fs-body: 13px;
+    --fs-meta: 12px;
+    --fs-small: 11.5px;
+    --fs-badge: 11px;
+    --yt-radius: 12px;
+    --yt-radius-sm: 8px;
+    --blue: #0284c7;
+    --blue-dark: #0369a1;
+  }
+
+  /* ============================================================
+     ANIMATION AU CHARGEMENT
+     ============================================================ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in {
+    opacity: 0;
+    animation: fadeUp 0.55s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in { animation: none; opacity: 1; }
+  }
+
+  /* ============================================================
+     WRAPPER
+     ============================================================ */
+  .page-actualites {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 36px 16px 20px;
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .page-hero {
+    text-align: center;
+    margin-bottom: 22px;
+  }
+  .page-hero h1 {
+    font-size: var(--fs-h1);
+    font-weight: 800;
+    letter-spacing: -1.1px;
+    line-height: 1.08;
+    color: var(--text-color);
+    margin: 0 0 8px;
+    font-family: 'Poppins', sans-serif;
+  }
+  .page-hero p {
+    font-size: var(--fs-body);
+    font-weight: 400;
+    color: var(--text-muted);
+    margin: 0 auto;
+    max-width: 460px;
+    line-height: 1.55;
+  }
+
+  /* ============================================================
+     FILTRES
+     ============================================================ */
+  .filters-bar {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 0 0 26px;
+  }
+  .filter-link {
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  }
+  .filter-link:hover {
+    background: rgba(0,0,0,0.04);
+  }
+  .filter-link.active {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+  }
+
+  /* ============================================================
+     GRILLE
+     ============================================================ */
+  .actualites-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ============================================================
+     CARTE ARTICLE
+     ============================================================ */
+  .actualite-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--yt-radius);
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.055), 0 2px 6px rgba(0,0,0,0.035);
+  }
+
+  /* En-tête auteur */
+  .actualite-card .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .actualite-card .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .actualite-card .card-user-info {
+    min-width: 0;
+    flex: 1;
+  }
+  .actualite-card .user-name {
+    font-size: var(--fs-body);
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    line-height: 1.3;
+  }
+  .actualite-card .verified-badge {
+    display: inline-grid;
+    place-items: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    font-size: 8px;
+    flex-shrink: 0;
+  }
+  .actualite-card .user-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    font-size: var(--fs-small);
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* ============================================================
+     THUMB
+     ============================================================ */
+  .actualite-card .thumb {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #0f172a;
+    text-decoration: none;
+  }
+  .actualite-card .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .actualite-card .thumb:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+  }
+
+  /* ============================================================
+     BADGES — tous en angle droit, uniformes
+     ============================================================ */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 0;
+    font-size: var(--fs-badge);
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .badge i {
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  /* Badge vidéo — bleu plein, haut gauche */
+  .badge-video {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    color: #fff;
+    background: var(--blue);
+    box-shadow: 0 2px 6px rgba(2,132,199,0.30);
+  }
+
+  /* Badge vues — noir translucide, bas droite */
+  .badge-views {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    z-index: 2;
+    color: #fff;
+    background: rgba(15, 23, 42, 0.78);
+    backdrop-filter: blur(6px);
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: none;
+  }
+  .badge-views i {
+    font-size: 11px;
+    opacity: 0.85;
+  }
+
+  /* Badge catégorie — dans le corps, fond gris léger, texte sombre */
+  .badge-category {
+    display: inline-block;
+    align-self: flex-start;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    background: rgba(0,0,0,0.05);
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    padding: 5px 9px;
+    font-size: var(--fs-badge);
+    line-height: 1;
+  }
+
+  /* ============================================================
+     CORPS
+     ============================================================ */
+  .actualite-card .body {
+    padding: 14px 16px 16px;
+  }
+  .actualite-card .body h3 {
+    font-size: var(--fs-title);
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 0 0 8px;
+    color: var(--text-color);
+    letter-spacing: -0.2px;
+  }
+  .actualite-title-link {
+    color: inherit;
+    text-decoration: none;
+  }
+  .actualite-title-link:hover {
+    color: var(--blue);
+  }
+
+  .actualite-card .content-preview {
+    font-size: var(--fs-body);
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .actualite-card .read-more {
+    color: var(--blue);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .actualite-card .read-more:hover {
+    text-decoration: underline;
+  }
+
+  /* Actions */
+  .actualite-card .post-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    padding: 10px 16px 12px;
+    border-top: 1px solid var(--border-color);
+    font-size: var(--fs-small);
+    color: var(--text-muted);
+  }
+  .actualite-card .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    line-height: 1;
+  }
+  .actualite-card .action-btn i { font-size: 12px; }
+  .actualite-card .action-btn:hover { color: var(--text-color); }
+  .actualite-card .count { font-variant-numeric: tabular-nums; }
+
+  /* ============================================================
+     ÉTAT VIDE
+     ============================================================ */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background: var(--bg-card);
+    border-radius: var(--yt-radius);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.055);
+  }
+  .empty-state i {
+    font-size: 40px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    display: block;
+  }
+  .empty-state h3 {
+    font-size: var(--fs-title);
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0 0 6px;
+  }
+  .empty-state p {
+    font-size: var(--fs-body);
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* ============================================================
+     PAGINATION
+     ============================================================ */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 26px auto 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .page-link {
+    padding: 7px 13px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: var(--yt-radius-sm);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--fs-small);
+    letter-spacing: 0.2px;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  }
+  .page-link:hover { background: rgba(0,0,0,0.04); }
+  .page-link.current {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 600px) {
+    :root {
+      --fs-h1: 23px;
+      --fs-title: 15px;
+      --fs-body: 12.5px;
+      --fs-small: 11px;
+      --fs-badge: 10.5px;
+    }
+    .page-actualites { padding: 26px 14px 16px; }
+    .page-hero { margin-bottom: 18px; }
+    .filters-bar { gap: 6px; margin-bottom: 20px; }
+    .filter-link { padding: 6px 11px; }
+    .actualites-grid { gap: 16px; }
+    .actualite-card .card-header { padding: 10px 12px; }
+    .actualite-card .body { padding: 12px 14px 14px; }
+    .actualite-card .post-actions { padding: 9px 14px 11px; }
+    .actualite-card .avatar { width: 32px; height: 32px; font-size: 13px; }
+    .badge { padding: 5px 9px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <section class="page-actualites fade-in">
+    <!-- HERO -->
+    <div class="page-hero">
+      <h1>Actualités de la Paroisse</h1>
+      <p>Retrouvez toutes les nouvelles, annonces et reportages de notre communauté</p>
+    </div>
+
+    <!-- FILTRES -->
+    <div class="filters-bar">
+      <a href="{% url 'articles:liste' %}" class="filter-link {% if not categorie_active %}active{% endif %}">Toutes</a>
+      {% for cat in categories %}
+        <a href="{% url 'articles:liste' %}?categorie={{ cat.slug }}" class="filter-link {% if categorie_active.slug == cat.slug %}active{% endif %}">
+          {{ cat.nom }}
+        </a>
+      {% endfor %}
+    </div>
+
+    <!-- LISTE DES ARTICLES -->
+    <div class="actualites-grid">
+      {% if page_obj %}
+        {% for article in page_obj %}
+          <article class="actualite-card">
+            <div class="card-header">
+              <div class="avatar">
+                <span class="avatar-letter">{{ article.auteur.username|slice:":1"|upper }}</span>
+              </div>
+              <div class="card-user-info">
+                <div class="user-name">
+                  {{ article.auteur.first_name|default:article.auteur.username }}
+                  {% if article.auteur.is_staff %}
+                    <span class="verified-badge" title="Compte certifié administrateur"><i class="fa-solid fa-check"></i></span>
+                  {% endif %}
+                </div>
+                <div class="user-meta">
+                  <span>{{ article.date_publication|date:"d M Y" }}</span>
+                </div>
+              </div>
+            </div>
+
+            <a class="thumb" href="{% url 'articles:detail' article.slug %}" aria-label="Lire {{ article.titre }}">
+              <img src="{% if article.image %}{{ article.image.url }}{% elif article.video_fichier %}{% static 'images/Sunday Service Digital Display Template.jpeg' %}{% elif article.image_principale %}{{ article.image_principale.url }}{% else %}{% static 'images/Sunday Service Digital Display Template.jpeg' %}{% endif %}" alt="{{ article.titre }}">
+              {% if article.has_video %}
+                <span class="badge badge-video"><i class="fa-solid fa-play" aria-hidden="true"></i> Vidéo</span>
+              {% endif %}
+              <span class="badge badge-views"><i class="fa-regular fa-eye"></i> {{ article.vues }}</span>
+            </a>
+
+            <div class="body">
+              {% if article.categorie %}
+                <span class="badge-category">{{ article.categorie.nom }}</span>
+              {% endif %}
+              <h3><a class="actualite-title-link" href="{% url 'articles:detail' article.slug %}">{{ article.titre }}</a></h3>
+              <p class="content-preview">
+                {{ article.resume|default:article.corps|striptags|truncatewords:30 }}
+                <a href="{% url 'articles:detail' article.slug %}" class="read-more">Lire la suite &rarr;</a>
+              </p>
+            </div>
+
+            <div class="post-actions">
+              <span class="action-btn">
+                <i class="fa-regular fa-heart"></i>
+                <span class="count">{{ article.nombre_likes }} likes</span>
+              </span>
+              <a href="{% url 'articles:detail' article.slug %}#commentaires" class="action-btn">
+                <i class="fa-regular fa-comment"></i>
+                <span class="count">{{ article.commentaires.count }} commentaires</span>
+              </a>
+              <a href="{% url 'articles:detail' article.slug %}" class="action-btn">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                <span>Voir</span>
+              </a>
+            </div>
+          </article>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <i class="fa-regular fa-newspaper"></i>
+          <h3>Aucun article publié pour le moment</h3>
+          <p>Revenez très bientôt pour découvrir nos dernières actualités.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- PAGINATION -->
+    {% if page_obj.has_other_pages %}
+      <div class="pagination">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{% if categorie_active %}&categorie={{ categorie_active.slug }}{% endif %}" class="page-link">&laquo; Précédent</a>
+        {% endif %}
+        <span class="page-link current">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if categorie_active %}&categorie={{ categorie_active.slug }}{% endif %}" class="page-link">Suivant &raquo;</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

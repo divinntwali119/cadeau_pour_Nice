@@ -1,0 +1,98 @@
+{% load static %}
+<!-- ============================================================
+     LECTEUR AUDIO FLOTTANT — ÉGLISE SMYRNE
+     ============================================================ -->
+<div class="smyrne-audio-player-container" id="smyrneAudioPlayer" aria-label="Lecteur audio de prédication">
+  <div class="smyrne-audio-player-card">
+    
+    <!-- VUE COMPLÈTE -->
+    <div class="player-card-full">
+      <div class="player-main-row">
+        
+        <!-- Piste & Auteur -->
+        <div class="player-track-info">
+          <div class="player-cover-wrap">
+            <img id="playerTrackCover" src="{% static 'images/predication.jpeg' %}" alt="Pochette Prédication">
+            <div class="soundwave-anim">
+              <span class="soundwave-bar"></span>
+              <span class="soundwave-bar"></span>
+              <span class="soundwave-bar"></span>
+              <span class="soundwave-bar"></span>
+            </div>
+          </div>
+          <div class="player-track-details">
+            <div class="player-track-title" id="playerTrackTitle">Prédication en cours</div>
+            <div class="player-track-preacher">
+              <i class="fa-solid fa-microphone"></i>
+              <span id="playerTrackPreacher">5e CELPA Smyrne</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contrôles centraux -->
+        <div class="player-controls-center">
+          <button type="button" class="player-btn player-btn-skip" id="playerSkipBackBtn" title="Reculer de 15 secondes" aria-label="Reculer de 15 secondes">
+            <i class="fa-solid fa-rotate-left"></i>
+            <span style="font-size: 9px; font-weight: 800; position: absolute; bottom: 2px;">15</span>
+          </button>
+          
+          <button type="button" class="player-btn player-btn-play" id="playerPlayBtn" title="Lecture / Pause" aria-label="Lecture ou pause">
+            <i class="fa-solid fa-play"></i>
+          </button>
+          
+          <button type="button" class="player-btn player-btn-skip" id="playerSkipFwdBtn" title="Avancer de 15 secondes" aria-label="Avancer de 15 secondes">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span style="font-size: 9px; font-weight: 800; position: absolute; bottom: 2px;">15</span>
+          </button>
+        </div>
+
+        <!-- Outils & Volume -->
+        <div class="player-tools-right">
+          <button type="button" class="player-speed-badge" id="playerSpeedBtn" title="Vitesse de lecture">1x</button>
+          
+          <div class="player-volume-wrap">
+            <button type="button" class="player-btn" id="playerVolumeBtn" title="Couper le son" aria-label="Couper le son">
+              <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <input type="range" class="player-volume-slider" id="playerVolumeSlider" min="0" max="1" step="0.05" value="1" aria-label="Volume">
+          </div>
+
+          <button type="button" class="player-btn" id="playerMinimizeBtn" title="Réduire en pilule" aria-label="Réduire">
+            <i class="fa-solid fa-down-left-and-up-right-to-center"></i>
+          </button>
+
+          <button type="button" class="player-btn" id="playerCloseBtn" title="Fermer le lecteur" aria-label="Fermer">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Barre de progression -->
+      <div class="player-progress-row">
+        <span class="player-time" id="playerCurrentTime">00:00</span>
+        <div class="player-progress-bar-wrap" id="playerProgressBarWrap">
+          <div class="player-progress-bg">
+            <div class="player-progress-fill" id="playerProgressFill"></div>
+          </div>
+          <div class="player-progress-thumb" id="playerProgressThumb"></div>
+        </div>
+        <span class="player-time total" id="playerTotalTime">--:--</span>
+      </div>
+    </div>
+
+    <!-- VUE PILULE (RÉTRACTÉE) -->
+    <div class="player-pill-view" id="playerPillView" title="Cliquer pour agrandir le lecteur">
+      <div class="pill-thumb">
+        <img id="pillTrackCover" src="{% static 'images/predication.jpeg' %}" alt="Cover">
+      </div>
+      <div class="pill-text">
+        <span class="pill-title" id="pillTrackTitle">Prédication</span>
+        <span class="pill-status"><i class="fa-solid fa-headphones"></i> En écoute</span>
+      </div>
+      <button type="button" class="player-btn player-btn-play" id="pillPlayBtn" style="width:32px; height:32px; font-size:12px;" aria-label="Play / Pause">
+        <i class="fa-solid fa-play"></i>
+      </button>
+    </div>
+
+  </div>
+</div>

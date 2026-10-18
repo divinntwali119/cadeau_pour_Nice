@@ -1,0 +1,38 @@
+# Python / Django
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+venv/
+.venv/
+.env
+.env.*
+!.env.example
+.env.local
+
+# Django media / uploads
+media/
+staticfiles/
+!media/.gitkeep
+!staticfiles/.gitkeep
+
+# IDE / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local databases
+*.db
+
+db.sqlite3
+
+# Node / build
+node_modules/
+
+# Sauvegardes
+backups/
+*.tar.gz
+*.gz

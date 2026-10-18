@@ -1,0 +1,934 @@
+/* Coque de navigation mobile — conserve les couleurs et polices du site. */
+:root {
+  --app-tabbar-height: 64px;
+  --app-tabbar-offset: 0px;
+  --app-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --app-header-height: 54px;
+  --app-shell-surface: var(--bg-secondary, #fff);
+  --app-shell-border: var(--border-color, #e2e8f0);
+  --app-shell-shadow: 0 8px 28px rgba(15, 23, 42, 0.12);
+}
+
+html,
+body {
+  min-height: 100%;
+  scroll-behavior: auto;
+  overscroll-behavior-y: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  padding-bottom: calc(var(--app-tabbar-height) + var(--app-safe-bottom) + var(--app-tabbar-offset));
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+input,
+textarea,
+select,
+[contenteditable="true"],
+.allow-text-selection {
+  user-select: text;
+  -webkit-user-select: text;
+  -webkit-touch-callout: default;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+button:active,
+a:active,
+[role="button"]:active {
+  filter: brightness(0.94);
+}
+
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--app-header-height);
+  padding: 0 10px;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: var(--app-shell-surface);
+  border-bottom: 1px solid var(--app-shell-border);
+  box-shadow: 0 3px 14px rgba(15, 23, 42, 0.045);
+}
+
+.app-brand {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text-color, #0f172a);
+  text-decoration: none;
+}
+
+.app-brand-logo {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border: 1px solid var(--app-shell-border);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.app-brand-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.15;
+}
+
+.app-brand-copy strong {
+  overflow: hidden;
+  font: 700 13px/1.2 'Poppins', 'Montserrat', sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-brand-copy small {
+  color: var(--text-muted, #64748b);
+  font: 500 10px/1.2 'Montserrat', sans-serif;
+}
+
+.app-topbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.smyrne-live-banner {
+  display: none !important;
+}
+
+.app-icon-button {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--text-color, #0f172a);
+  background: transparent;
+  box-shadow: none;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.app-icon-button:hover,
+.app-icon-button:focus-visible {
+  color: var(--primary-color, #0284c7);
+  background: transparent;
+}
+
+.app-icon-button:focus-visible {
+  outline: 2px solid var(--primary-color, #0284c7);
+  outline-offset: 2px;
+}
+
+.app-icon-button:active {
+  transform: scale(0.96);
+}
+
+.app-menu-button[aria-expanded="true"] {
+  color: var(--primary-color, #0284c7);
+  background: transparent;
+}
+
+.app-menu-button i {
+  transition: transform 180ms ease;
+}
+
+.app-menu-button.is-open i {
+  transform: rotate(90deg);
+}
+
+.app-install-button[hidden],
+.app-menu-button[hidden],
+.app-subtabs[hidden],
+.app-menu-scrim[hidden] {
+  display: none;
+}
+
+.app-subtabs {
+  position: sticky;
+  top: var(--app-header-height);
+  z-index: 1090;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 6px 10px;
+  background: var(--app-shell-surface);
+  border-bottom: 1px solid var(--app-shell-border);
+  scrollbar-width: none;
+}
+
+.app-subtabs::-webkit-scrollbar {
+  display: none;
+}
+
+.app-subtabs a {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 0 auto;
+  padding: 0 8px;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  color: var(--text-muted, #475569);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.app-subtabs a[aria-current="page"] {
+  color: var(--primary-color, #0284c7);
+  border-bottom-color: var(--primary-color, #0284c7);
+}
+
+.app-tabbar {
+  position: fixed;
+  z-index: 1150;
+  right: 0;
+  bottom: var(--app-tabbar-offset);
+  left: 0;
+  min-height: calc(var(--app-tabbar-height) + var(--app-safe-bottom));
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  padding: 2px 4px var(--app-safe-bottom);
+  background: var(--app-shell-surface);
+  border-top: 1px solid var(--app-shell-border);
+  box-shadow: 0 -5px 22px rgba(15, 23, 42, 0.07);
+}
+
+.app-tabbar::after {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: var(--app-tabbar-offset);
+  background: var(--app-shell-surface, #ffffff);
+  content: "";
+  pointer-events: none;
+}
+
+.app-tab {
+  position: relative;
+  min-width: 0;
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 2px 1px;
+  border: 0;
+  color: #64748b;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.15;
+  text-align: center;
+  text-decoration: none;
+  -webkit-touch-callout: none;
+}
+
+.app-tab > i {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.app-tab[aria-current="page"] {
+  color: var(--primary-color, #0284c7);
+}
+
+.app-tab:focus-visible {
+  color: var(--primary-color, #0284c7);
+  outline: 2px solid var(--primary-color, #0284c7);
+  outline-offset: 2px;
+}
+
+.app-tab-live {
+  align-self: start;
+  gap: 0;
+  margin-top: -16px;
+  color: #dc2626;
+  font-weight: 800;
+}
+
+.app-tab-live[aria-current="page"] {
+  color: #dc2626;
+}
+
+.app-live-orb {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 2px;
+  border: 4px solid var(--app-shell-surface);
+  border-radius: 50%;
+  color: #ffffff;
+  background: #dc2626;
+  box-shadow: 0 5px 14px rgba(220, 38, 38, 0.32);
+  font-size: 20px;
+}
+
+.app-tab-live[aria-current="page"] .app-live-orb {
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.14), 0 5px 14px rgba(220, 38, 38, 0.32);
+}
+
+.app-tab-live > span:last-child {
+  min-height: 13px;
+}
+
+.app-live-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+}
+
+.app-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #dc2626;
+  animation: appLivePulse 1.15s ease-in-out infinite;
+}
+
+@keyframes appLivePulse {
+  50% { opacity: 0.35; transform: scale(0.78); }
+}
+
+.app-menu-scrim {
+  position: fixed;
+  z-index: 1190;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.app-menu-scrim.is-visible {
+  opacity: 1;
+}
+
+.app-menu-drawer {
+  position: fixed;
+  z-index: 1200;
+  inset: 0 auto 0 0;
+  width: min(78vw, 340px);
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--app-shell-surface);
+  box-shadow: 4px 0 22px rgba(15, 23, 42, 0.18);
+  transform: translateX(-102%);
+  visibility: hidden;
+  transition: transform 250ms cubic-bezier(0.2, 0.7, 0.2, 1), visibility 250ms;
+  overscroll-behavior: contain;
+}
+
+.app-menu-drawer.is-open {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.app-menu-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: calc(26px + env(safe-area-inset-top, 0px)) 18px 18px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary-color, #0284c7), var(--primary-hover, #0369a1));
+}
+
+.app-menu-avatar {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  flex: 0 0 54px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.76);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+}
+
+.app-menu-avatar:has(.app-menu-avatar-placeholder) {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-menu-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.app-menu-avatar-placeholder {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: #fff;
+  font-size: 20px;
+}
+
+.app-menu-user {
+  min-width: 0;
+  flex: 1;
+}
+
+.app-menu-name {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-menu-email {
+  overflow: hidden;
+  margin-top: 3px;
+  font-size: 12px;
+  opacity: 0.88;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-menu-drawer nav {
+  flex: 0 0 auto;
+}
+
+.app-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 12px 0;
+  list-style: none;
+}
+
+.app-menu-item {
+  width: 100%;
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 0;
+  color: var(--text-color, #0f172a);
+  background: transparent;
+  font: 500 14px/1.3 'Montserrat', sans-serif;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.app-menu-icon {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 0;
+  color: #475569;
+  background: transparent;
+  font-size: 16px;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.app-menu-chevron {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.app-menu-item:active,
+.app-menu-item:focus-visible {
+  color: var(--primary-color, #0284c7);
+  background: transparent;
+}
+
+.app-menu-item:focus-visible {
+  outline: 2px solid var(--primary-color, #0284c7);
+  outline-offset: -2px;
+}
+
+.app-menu-item:active .app-menu-icon,
+.app-menu-item:focus-visible .app-menu-icon {
+  color: var(--primary-color, #0284c7);
+  transform: scale(0.96);
+}
+
+.app-menu-divider {
+  height: 1px;
+  margin: 10px 0;
+  background: #e5e7eb;
+}
+
+.app-menu-footer {
+  padding: 14px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid #eef2f7;
+}
+
+.app-menu-account-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.app-menu-social {
+  min-width: 0;
+  height: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: 0;
+  color: var(--primary-color, #0284c7);
+  background: transparent;
+  font-size: 13px;
+  text-decoration: none;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.app-menu-social span {
+  white-space: nowrap;
+}
+
+.app-menu-account-actions .app-menu-social {
+  flex: 1;
+  font-size: 12px;
+}
+
+.app-menu-account-logout {
+  color: var(--text-color, #334155);
+  background: transparent;
+}
+
+.app-menu-social:active,
+.app-menu-social:focus-visible {
+  color: var(--primary-hover, #0369a1);
+}
+
+.app-menu-social:focus-visible {
+  outline: 2px solid var(--primary-color, #0284c7);
+  outline-offset: 2px;
+}
+
+#appMain {
+  min-height: calc(100dvh - var(--app-header-height) - var(--app-tabbar-height) - var(--app-safe-bottom));
+}
+
+#appMain .page-hero {
+  position: relative;
+  width: 100%;
+  min-height: 0;
+  display: block;
+  overflow: visible;
+  margin: 10px auto 12px !important;
+  padding: 18px 16px 12px !important;
+  border: 0;
+  border-radius: 0;
+  color: var(--text-color, #0f172a) !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  text-align: left !important;
+}
+
+#appMain .page-actualites,
+#appMain .page-galerie {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 10px 14px 30px !important;
+}
+
+#appMain .page-hero .hero-bg,
+#appMain .page-hero .hero-overlay,
+#appMain .page-hero::before,
+#appMain .page-hero::after {
+  display: none !important;
+  background: none !important;
+}
+
+#appMain .page-hero .hero-content {
+  position: relative !important;
+  inset: auto !important;
+  z-index: auto !important;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 !important;
+  color: var(--text-color, #0f172a) !important;
+  text-align: left !important;
+  transform: none !important;
+}
+
+#appMain .page-hero h1 {
+  margin: 0 0 5px !important;
+  color: var(--text-color, #0f172a) !important;
+  font: 800 clamp(22px, 6vw, 29px)/1.2 'Poppins', 'Montserrat', sans-serif !important;
+  letter-spacing: -0.025em !important;
+  text-align: left !important;
+}
+
+#appMain .page-hero p {
+  max-width: 62ch;
+  margin: 0 !important;
+  color: var(--text-muted, #64748b) !important;
+  font: 400 13px/1.55 'Montserrat', sans-serif !important;
+  text-align: left !important;
+}
+
+#appMain .bio-hero {
+  position: relative;
+  min-height: 0;
+  display: block;
+  overflow: visible;
+  padding: 16px 18px 20px !important;
+  color: var(--text-color, #0f172a) !important;
+  background: transparent !important;
+  text-align: left !important;
+}
+
+#appMain .bio-hero .hero-bg {
+  display: none !important;
+}
+
+#appMain .bio-hero .hero-content {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--text-color, #0f172a) !important;
+  text-align: left !important;
+}
+
+#appMain .bio-hero .hero-image {
+  width: 84px;
+  height: 84px;
+  margin: 0 0 12px !important;
+  border-width: 3px;
+}
+
+#appMain .bio-hero h1 {
+  margin: 0 0 5px !important;
+  color: var(--text-color, #0f172a) !important;
+  font: 800 24px/1.2 'Poppins', 'Montserrat', sans-serif !important;
+  text-align: left !important;
+}
+
+#appMain .bio-hero .bio-titre {
+  margin-bottom: 6px;
+  color: var(--primary-color, #0284c7) !important;
+  font-size: 12px;
+}
+
+#appMain .bio-hero p {
+  max-width: 62ch;
+  margin: 0 !important;
+  color: var(--text-muted, #64748b) !important;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+#appMain.app-screen-enter {
+  animation: appScreenFade 180ms ease-out both;
+}
+
+#appMain.app-screen-detail-enter {
+  animation: appScreenSlide 220ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes appScreenFade {
+  from { opacity: 0.72; }
+  to { opacity: 1; }
+}
+
+@keyframes appScreenSlide {
+  from { opacity: 0.75; transform: translateX(18px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.smyrne-audio-player-container {
+  bottom: calc(var(--app-tabbar-height) + var(--app-safe-bottom) + 10px);
+  z-index: 1140;
+  width: min(920px, calc(100vw - 24px));
+}
+
+.smyrne-audio-player-container.minimized {
+  right: 12px;
+  bottom: calc(var(--app-tabbar-height) + var(--app-safe-bottom) + 8px);
+}
+
+body.menu-open,
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Les dialogues occupent la zone de contenu, jamais les deux barres fixes. */
+.search-modal-backdrop,
+.invite-modal-backdrop,
+.verset-modal-backdrop,
+.live-video-modal-backdrop,
+.lightbox-modal {
+  inset: var(--app-header-height, 56px) 0
+    calc(var(--app-tabbar-height, 68px) + var(--app-safe-bottom, 0px));
+  z-index: 1145;
+  align-items: center;
+  padding: clamp(12px, 3vw, 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (min-width: 800px) {
+  .search-modal-backdrop,
+  .invite-modal-backdrop,
+  .verset-modal-backdrop,
+  .live-video-modal-backdrop,
+  .lightbox-modal {
+    right: max(0px, calc((100vw - 720px) / 2));
+    left: max(0px, calc((100vw - 720px) / 2));
+  }
+
+  body {
+    max-width: 720px;
+    min-height: 100dvh;
+    margin: 0 auto;
+    box-shadow: 0 0 50px rgba(15, 23, 42, 0.1);
+  }
+
+  .app-tabbar {
+    right: max(0px, calc((100vw - 720px) / 2));
+    left: max(0px, calc((100vw - 720px) / 2));
+  }
+
+  .app-menu-drawer {
+    left: max(0px, calc((100vw - 720px) / 2));
+  }
+
+  .app-menu-scrim {
+    right: max(0px, calc((100vw - 720px) / 2));
+    left: max(0px, calc((100vw - 720px) / 2));
+  }
+}
+
+@media (max-width: 360px) {
+  .app-topbar {
+    padding-right: 9px;
+    padding-left: 8px;
+  }
+
+  .app-brand {
+    gap: 7px;
+  }
+
+  .app-brand-logo {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .app-brand-copy strong {
+    font-size: 12px;
+  }
+
+  .app-topbar-actions {
+    gap: 4px;
+  }
+
+  .app-icon-button {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 799px) {
+  :root {
+    --app-tabbar-offset: 6px;
+  }
+}
+
+[data-theme="dark"] .app-menu-icon {
+  color: #cbd5e1;
+  background: transparent;
+}
+
+[data-theme="dark"] .app-menu-chevron {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .app-menu-divider {
+  background: var(--app-shell-border);
+}
+
+[data-theme="dark"] .app-menu-footer {
+  border-top-color: var(--app-shell-border);
+}
+
+[data-theme="dark"] .app-menu-account-logout {
+  color: #e2e8f0;
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Les contrôles des modales restent de simples icônes ou libellés, sans pastille. */
+.search-modal-backdrop .search-modal-close,
+.search-modal-backdrop .search-modal-clear,
+.invite-modal-backdrop .invite-modal-close,
+.verset-modal-backdrop .verset-modal-close,
+.live-video-modal-backdrop .live-video-close-btn,
+.lightbox-modal .lightbox-close,
+.image-modal .modal-close {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.search-modal-backdrop .search-cat-btn,
+.search-modal-backdrop .search-tag-chip,
+.invite-modal-backdrop .invite-template-btn,
+.invite-modal-backdrop .btn-invite-whatsapp,
+.invite-modal-backdrop .btn-invite-secondary,
+.verset-modal-backdrop .btn-verset-whatsapp,
+.verset-modal-backdrop .btn-verset-copy,
+.post-modal .modal-body .modal-actions .action-btn,
+.post-modal .modal-body .modal-comments .send-comment,
+.post-modal .modal-body .modal-comments .delete-comment {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.search-modal-backdrop .search-modal-close:hover,
+.search-modal-backdrop .search-modal-clear:hover,
+.search-modal-backdrop .search-cat-btn:hover,
+.search-modal-backdrop .search-tag-chip:hover,
+.invite-modal-backdrop .invite-modal-close:hover,
+.invite-modal-backdrop .invite-template-btn:hover,
+.invite-modal-backdrop .btn-invite-secondary:hover,
+.verset-modal-backdrop .verset-modal-close:hover,
+.live-video-modal-backdrop .live-video-close-btn:hover,
+.image-modal .modal-close:hover,
+.post-modal .modal-body .modal-actions .action-btn:hover,
+.post-modal .modal-body .modal-comments .delete-comment:hover {
+  background: transparent;
+}
+
+.search-modal-backdrop .search-modal-close:focus-visible,
+.search-modal-backdrop .search-modal-clear:focus-visible,
+.search-modal-backdrop .search-cat-btn:focus-visible,
+.search-modal-backdrop .search-tag-chip:focus-visible,
+.invite-modal-backdrop .invite-modal-close:focus-visible,
+.invite-modal-backdrop .invite-template-btn:focus-visible,
+.invite-modal-backdrop .btn-invite-whatsapp:focus-visible,
+.invite-modal-backdrop .btn-invite-secondary:focus-visible,
+.verset-modal-backdrop .verset-modal-close:focus-visible,
+.verset-modal-backdrop .btn-verset-whatsapp:focus-visible,
+.verset-modal-backdrop .btn-verset-copy:focus-visible,
+.live-video-modal-backdrop .live-video-close-btn:focus-visible,
+.lightbox-modal .lightbox-close:focus-visible,
+.image-modal .modal-close:focus-visible,
+.post-modal .modal-body .modal-actions .action-btn:focus-visible,
+.post-modal .modal-body .modal-comments .send-comment:focus-visible,
+.post-modal .modal-body .modal-comments .delete-comment:focus-visible {
+  outline: 2px solid var(--primary-color, #0284c7);
+  outline-offset: 2px;
+}
+
+.search-modal-backdrop .search-cat-btn.active,
+.search-modal-backdrop .search-cat-btn[aria-pressed="true"],
+.invite-modal-backdrop .invite-template-btn.active {
+  color: var(--primary-color, #0284c7);
+  background: transparent;
+  box-shadow: none;
+  font-weight: 800;
+}
+
+.search-modal-backdrop .search-cat-btn:hover,
+.search-modal-backdrop .search-tag-chip:hover,
+.invite-modal-backdrop .invite-template-btn:hover,
+.invite-modal-backdrop .btn-invite-secondary:hover,
+.verset-modal-backdrop .btn-verset-copy:hover,
+.post-modal .modal-body .modal-actions .action-btn:hover {
+  color: var(--primary-color, #0284c7);
+}
+
+.search-modal-backdrop .search-tag-chip:hover,
+.invite-modal-backdrop .btn-invite-secondary:hover,
+.verset-modal-backdrop .btn-verset-copy:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.invite-modal-backdrop .btn-invite-whatsapp {
+  color: #128c55 !important;
+  text-decoration: none;
+}
+
+.invite-modal-backdrop .btn-invite-whatsapp:hover {
+  color: #0f7a49 !important;
+  filter: none;
+  transform: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.verset-modal-backdrop .btn-verset-whatsapp {
+  color: #128c55 !important;
+}
+
+.post-modal .modal-body .modal-comments .send-comment {
+  width: 44px;
+  height: 44px;
+  color: var(--primary-color, #0284c7);
+}
+
+.post-modal .modal-body .modal-comments .send-comment:hover {
+  color: var(--primary-hover, #0369a1);
+  background: transparent;
+}

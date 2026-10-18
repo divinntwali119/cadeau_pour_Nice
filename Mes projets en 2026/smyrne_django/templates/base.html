@@ -1,0 +1,1745 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>{% block title %}5e CELPA SMYRNE - Site Officiel{% endblock %}</title>
+
+  <!-- ===== FAVICON ===== -->
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/pwa/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/pwa/favicon-16x16.png' %}">
+  <link rel="apple-touch-icon" sizes="192x192" href="{% static 'images/pwa/icon-192x192.png' %}">
+
+  <!-- ===== PWA MANIFEST ===== -->
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+  <meta name="theme-color" content="#0284c7">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Smyrne">
+
+  <!-- ===== SEO META ===== -->
+  <meta name="description" content="{% block meta_description %}Site officiel de l'Eglise Smyrne 5e CELPA. Prédications, événements, actualités, galerie et vie de l'église.{% endblock %}">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Eglise Smyrne — 5e CELPA">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+  <!-- ===== OPEN GRAPH (Facebook, WhatsApp...) ===== -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="Eglise Smyrne — 5e CELPA">
+  <meta property="og:title" content="{% block og_title %}5e CELPA SMYRNE - Site Officiel{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Site officiel de l'Eglise Smyrne 5e CELPA. Prédications, événements, actualités et vie de l'église.{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo_smyrne.jpeg' %}{% endblock %}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+
+  <!-- ===== TWITTER CARDS ===== -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% block twitter_title %}5e CELPA SMYRNE - Site Officiel{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}Site officiel de l'Eglise Smyrne 5e CELPA.{% endblock %}">
+  <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo_smyrne.jpeg' %}{% endblock %}">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Search CSS & Features -->
+  <link rel="stylesheet" href="{% static 'css/search.css' %}">
+  <link rel="stylesheet" href="{% static 'css/search-modal.css' %}">
+  <link rel="stylesheet" href="{% static 'css/audio-player.css' %}">
+  <link rel="stylesheet" href="{% static 'css/live-banner.css' %}">
+  <link rel="stylesheet" href="{% static 'css/invite-modal.css' %}">
+  <link rel="stylesheet" href="{% static 'css/verset-widget.css' %}">
+
+  <style id="appBaseStyles">
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-color: #0f172a;
+      --text-muted: #475569;
+      --primary-color: #0284c7;
+      --primary-hover: #0369a1;
+      --accent-color: #00c853;
+      --topbar-bg: #0f172a;
+      --topbar-text: #cbd5e1;
+      --card-bg-alt: #ffffff;
+      --card-text-alt: #0f172a;
+      --section-dark-bg: #1e293b;
+      --border-color: #e2e8f0;
+      --shadow-color: rgba(15, 23, 42, 0.08);
+      --btn-cyan-bg: #0284c7;
+      --btn-cyan-text: #ffffff;
+      --badge-bg: rgba(2, 132, 199, 0.9);
+      --badge-text: #ffffff;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #111111;
+      --bg-card: #111111;
+      --text-color: #e8e8e8;
+      --text-muted: #888888;
+      --primary-color: #1a73e8;
+      --primary-hover: #2b7fff;
+      --accent-color: #00c853;
+      --topbar-bg: #0a0a0a;
+      --topbar-text: #888888;
+      --card-bg-alt: #111111;
+      --card-text-alt: #e8e8e8;
+      --section-dark-bg: #0a0a0a;
+      --border-color: #2a2a2a;
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      --btn-cyan-bg: #1a73e8;
+      --btn-cyan-text: #ffffff;
+      --badge-bg: rgba(26, 115, 232, 0.2);
+      --badge-text: #4a9eff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body.menu-open {
+      overflow: hidden;
+    }
+
+    main {
+      flex: 1;
+    }
+
+    /* --- PRELOADER --- */
+    .preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: var(--bg-secondary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    .preloader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .preloader .loader-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .preloader .spinner-wrapper {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+
+    .preloader .spinner-svg {
+      width: 100%;
+      height: 100%;
+      animation: rotate-spinner 1.6s linear infinite;
+    }
+
+    @keyframes rotate-spinner {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .preloader .loader-logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--primary-color);
+      background: var(--bg-secondary);
+    }
+
+    .preloader .loader-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* --- TOP BAR --- */
+    .top-bar {
+      background-color: var(--topbar-bg);
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 40px;
+      font-size: 11.5px;
+      color: var(--topbar-text);
+      z-index: 1002;
+      position: sticky;
+      top: 0;
+      flex-wrap: wrap;
+      gap: 10px;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .top-bar-left, .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .top-bar-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--topbar-text);
+      transition: color 0.2s;
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 11px;
+      padding: 0;
+      position: relative;
+    }
+
+    .top-bar-item:hover {
+      color: #ffffff;
+    }
+
+    .top-bar-item svg, .top-bar-item i {
+      font-size: 12px;
+      fill: currentColor;
+    }
+
+    .top-bar-item-help {
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.72);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-left: 2px;
+      white-space: nowrap;
+    }
+
+    .user-greeting {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      margin-left: 6px;
+      border-radius: 50%;
+      background: #1d9bf0;
+      color: #ffffff;
+      font-size: 9px;
+      line-height: 1;
+      vertical-align: middle;
+      box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.15);
+    }
+
+    .verified-badge i {
+      font-size: 9px;
+    }
+
+    .theme-toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 3px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    /* --- HEADER --- */
+    .header {
+      background-color: var(--bg-secondary);
+      height: 65px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      box-shadow: 0 4px 15px var(--shadow-color);
+      position: sticky;
+      top: 40px;
+      z-index: 1001;
+      border-bottom: 1px solid var(--border-color);
+      transition: background-color 0.3s ease;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+    }
+
+    .logo-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .logo-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-color);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .logo-subtitle {
+      font-size: 7px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 1px;
+      font-weight: 600;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-size: 13px;
+      font-weight: 600;
+      padding-bottom: 4px;
+      position: relative;
+      transition: color 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background-color: var(--primary-color);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--primary-color);
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a.active::after {
+      width: 100%;
+    }
+
+    .nav-contact-btn {
+      background-color: var(--primary-color);
+      color: #ffffff !important;
+      padding: 6px 14px !important;
+      border-radius: 6px;
+      font-weight: 700 !important;
+      transition: all 0.3s ease;
+      padding-bottom: 6px !important;
+    }
+
+    .nav-contact-btn:hover {
+      background-color: var(--primary-hover);
+      color: #ffffff !important;
+      transform: translateY(-2px);
+    }
+
+    .nav-contact-btn::after {
+      display: none !important;
+    }
+
+    .nav-actualites-btn {
+      padding: 4px 8px !important;
+      border-radius: 6px;
+      font-weight: 700 !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+      color: var(--text-color);
+      text-decoration: none;
+      background: transparent;
+    }
+
+    .nav-actualites-btn:hover {
+      background: rgba(2, 132, 199, 0.08);
+      color: var(--primary-color);
+    }
+
+    /* --- BOUTON ET DROPDOWN PLUS PREMIUM --- */
+    .nav-dropdown {
+      position: relative;
+      display: inline-flex !important;
+      align-items: center;
+    }
+
+    .nav-dropdown-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text-color);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 13px;
+      border-radius: 6px;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+      background: rgba(2, 132, 199, 0.06);
+      border: 1px solid rgba(2, 132, 199, 0.25);
+      font-family: inherit;
+    }
+
+    .nav-dropdown-btn:hover,
+    .nav-dropdown:hover .nav-dropdown-btn,
+    .nav-dropdown.open .nav-dropdown-btn {
+      color: var(--primary-color);
+      background: rgba(2, 132, 199, 0.14);
+      border-color: var(--primary-color);
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.2);
+    }
+
+    .nav-dropdown-btn svg {
+      width: 11px;
+      height: 11px;
+      fill: currentColor;
+      transition: transform 0.25s ease;
+    }
+
+    .nav-dropdown:hover .nav-dropdown-btn svg,
+    .nav-dropdown.open .nav-dropdown-btn svg {
+      transform: rotate(180deg);
+    }
+
+    .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 12px 35px var(--shadow-color);
+      padding: 8px 6px;
+      min-width: 225px;
+      z-index: 1050;
+      list-style: none;
+    }
+
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu,
+    .nav-dropdown.open .nav-dropdown-menu {
+      display: block;
+      animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes dropdownFadeIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -8px);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+
+    .nav-dropdown-menu li {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      display: block !important;
+    }
+
+    .nav-dropdown-menu a {
+      display: flex !important;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px !important;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-color);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      border-bottom: none !important;
+      height: auto !important;
+    }
+
+    .nav-dropdown-menu a i {
+      font-size: 15px;
+      width: 20px;
+      color: var(--primary-color);
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .nav-dropdown-menu a::after {
+      display: none !important;
+    }
+
+    .nav-dropdown-menu a:hover {
+      background-color: rgba(2, 132, 199, 0.1);
+      color: var(--primary-color);
+      transform: translateX(3px);
+    }
+
+    .nav-auth-mobile {
+      display: none !important;
+    }
+
+    @media (max-width: 1024px) {
+      .nav-auth-mobile {
+        display: block !important;
+      }
+      .nav-dropdown {
+        width: 100%;
+        display: block !important;
+      }
+      .nav-dropdown-btn {
+        width: 100%;
+        justify-content: space-between;
+        padding: 10px 0;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 15px;
+        box-shadow: none;
+      }
+      .nav-dropdown-menu {
+        position: static;
+        transform: none !important;
+        box-shadow: none;
+        border: none;
+        background: rgba(2, 132, 199, 0.05);
+        border-radius: 8px;
+        padding: 6px;
+        margin: 6px 0 12px 0;
+        display: none;
+      }
+      .nav-dropdown.open .nav-dropdown-menu {
+        display: block;
+      }
+      .nav-dropdown-menu a {
+        padding: 9px 12px !important;
+        font-size: 14px;
+      }
+    }
+
+    .hamburger {
+      display: none;
+      position: relative;
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(2, 132, 199, 0.2);
+      border-radius: 14px;
+      background: rgba(2, 132, 199, 0.06);
+      cursor: pointer;
+      z-index: 1002;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 18px rgba(2, 132, 199, 0.08);
+    }
+
+    .hamburger:hover {
+      background: rgba(2, 132, 199, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .hamburger span {
+      position: absolute;
+      left: 14px;
+      width: 20px;
+      height: 2.5px;
+      background-color: var(--text-color);
+      border-radius: 999px;
+      transition: all 0.28s ease;
+    }
+
+    .hamburger span:nth-child(1) { top: 16px; }
+    .hamburger span:nth-child(2) { top: 23px; }
+    .hamburger span:nth-child(3) { top: 30px; }
+
+    .hamburger.active {
+      background: rgba(2, 132, 199, 0.12);
+      border-color: rgba(2, 132, 199, 0.4);
+    }
+
+    .hamburger.active span {
+      background-color: var(--primary-color);
+    }
+
+    .hamburger.active span:nth-child(1) {
+      top: 23px;
+      transform: rotate(45deg);
+    }
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+      transform: scaleX(0.2);
+    }
+    .hamburger.active span:nth-child(3) {
+      top: 23px;
+      transform: rotate(-45deg);
+    }
+
+    /* --- MESSAGES DJANGO --- */
+    .messages-container {
+      max-width: 1200px;
+      margin: 15px auto 0 auto;
+      padding: 0 20px;
+    }
+
+    .alert-msg {
+      padding: 12px 18px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: slideIn 0.3s ease;
+    }
+
+    .alert-msg.success {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .alert-msg.error {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .alert-msg.info {
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+
+    .alert-msg.warning {
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .alert-close {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: inherit;
+      padding-left: 10px;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- FOOTER --- */
+    .footer {
+      background-color: #0f172a;
+      color: #cbd5e1;
+      padding: 60px 40px 20px 40px;
+      margin-top: auto;
+      border-top: 1px solid #1e293b;
+    }
+
+    [data-theme="dark"] .footer {
+      background-color: #050505;
+      border-top-color: #1a1a1a;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+      gap: 40px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      margin-bottom: 16px;
+    }
+
+    .footer-logo-img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .footer-logo-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .footer-logo-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+      display: block;
+    }
+
+    .footer-logo-subtitle {
+      font-size: 8px;
+      color: #94a3b8;
+      letter-spacing: 1px;
+      display: block;
+    }
+
+    .footer-col p {
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      color: #94a3b8;
+    }
+
+    .footer-col h4 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 18px;
+      position: relative;
+      padding-bottom: 8px;
+    }
+
+    .footer-col h4::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 30px;
+      height: 2px;
+      background-color: var(--primary-color);
+      border-radius: 2px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-links a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s, padding-left 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: #ffffff;
+      padding-left: 4px;
+    }
+
+    .footer-contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .footer-contact-item i {
+      color: var(--primary-color);
+      margin-top: 3px;
+      font-size: 14px;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .social-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .social-btn:hover {
+      background: var(--primary-color);
+      transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 40px auto 0 auto;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    /* --- RESPONSIVE NAVBAR & DRAWER --- */
+    .mobile-menu-overlay,
+    .mobile-menu-drawer {
+      display: none !important;
+    }
+
+    @media (max-width: 992px) {
+      .top-bar {
+        min-height: 42px;
+        padding: 6px 16px;
+      }
+      .header {
+        padding: 0 20px;
+        top: 42px;
+      }
+      .hamburger {
+        display: block;
+      }
+      .desktop-nav {
+        display: none;
+      }
+      .mobile-menu-overlay {
+        display: block !important;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.42);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.28s ease, visibility 0.28s ease;
+        z-index: 1200;
+      }
+      .mobile-menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+      .mobile-menu-drawer {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        left: -84%;
+        width: min(78vw, 340px);
+        height: 100vh;
+        background: #ffffff;
+        box-shadow: 4px 0 22px rgba(15, 23, 42, 0.18);
+        transition: left 0.3s ease-in-out;
+        z-index: 1201;
+        flex-direction: column;
+        overflow-y: auto;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .mobile-menu-drawer.open {
+        left: 0;
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .mobile-menu-profile {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+        color: #fff;
+        padding: 26px 18px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .mobile-menu-avatar {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.18);
+        border: 2px solid rgba(255,255,255,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .mobile-menu-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .mobile-menu-avatar .avatar-placeholder {
+        font-size: 20px;
+        color: #fff;
+      }
+      .mobile-menu-user {
+        min-width: 0;
+      }
+      .mobile-menu-name {
+        font-size: 15px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mobile-menu-email {
+        font-size: 11px;
+        opacity: 0.85;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mobile-menu-list {
+        list-style: none;
+        padding: 12px 0;
+        flex: 1;
+      }
+      .mobile-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 18px;
+        color: #1f2937;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .mobile-menu-item:hover,
+      .mobile-menu-item:focus-visible {
+        background: rgba(2, 132, 199, 0.06);
+        color: var(--primary-color);
+      }
+      .mobile-menu-item.active {
+        background: rgba(38, 198, 218, 0.12);
+        color: #0f172a;
+      }
+      .mobile-menu-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #475569;
+        font-size: 13px;
+        flex-shrink: 0;
+      }
+      .mobile-menu-item.active .mobile-menu-icon {
+        background: rgba(38, 198, 218, 0.18);
+        color: var(--primary-color);
+      }
+      .mobile-menu-divider {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 10px 0;
+      }
+      .mobile-menu-footer {
+        padding: 14px 18px 20px;
+        border-top: 1px solid #eef2f7;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+      }
+      .mobile-menu-account-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+      }
+      .mobile-menu-social {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #fff;
+        font-size: 13px;
+        background: rgba(2, 132, 199, 0.12);
+        border: 1px solid rgba(2, 132, 199, 0.18);
+        color: var(--primary-color);
+      }
+      .mobile-menu-social.facebook { background: rgba(2, 132, 199, 0.12); color: var(--primary-color); }
+      .mobile-menu-social.x { background: rgba(15, 23, 42, 0.08); color: var(--text-color); }
+      .mobile-menu-social.youtube { background: rgba(2, 132, 199, 0.1); color: var(--primary-color); }
+      .mobile-menu-social.instagram { background: linear-gradient(135deg, rgba(2,132,199,0.15), rgba(0,200,83,0.18)); color: var(--primary-color); }
+      .footer-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .footer-container {
+        grid-template-columns: 1fr;
+      }
+      .top-bar-left span, .top-bar-right #themeText {
+        display: none;
+      }
+    }
+
+    .menu-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(2px);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    .menu-backdrop.show,
+    .menu-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+
+  <!-- APP_ROUTE_STYLES_START -->
+  {% block extra_css %}{% endblock %}
+  <!-- APP_ROUTE_STYLES_END -->
+  <link rel="stylesheet" href="{% static 'css/app-shell.css' %}" data-app-shell-style>
+</head>
+<body>
+
+  <!-- PRELOADER -->
+  <div class="preloader" id="preloader">
+    <div class="loader-container">
+      <div class="spinner-wrapper">
+        <svg class="spinner-svg" viewBox="0 0 100 100">
+          <g id="dotsGroup" class="dots-circle"></g>
+        </svg>
+        <div class="loader-logo">
+          <img src="{% if parametres_site.logo %}{{ parametres_site.logo.url }}{% else %}{% static 'images/logo_smyrne.jpeg' %}{% endif %}" alt="5e CELPA Smyrne">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coque de navigation de l’application -->
+  {% include 'includes/live_banner.html' %}
+  <header class="app-topbar" id="appTopbar">
+    <a class="app-brand" href="{% url 'core:accueil' %}" aria-label="Accueil — {{ parametres_site.nom_eglise|default:'5e CELPA SMYRNE' }}">
+      <img src="{% if parametres_site.logo %}{{ parametres_site.logo.url }}{% else %}{% static 'images/logo_smyrne.jpeg' %}{% endif %}" alt="" class="app-brand-logo">
+      <span class="app-brand-copy">
+        <strong>{{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}</strong>
+        <small>Église • Bukavu</small>
+      </span>
+    </a>
+    <div class="app-topbar-actions">
+      <button class="app-icon-button app-search-button" id="searchToggle" type="button" aria-label="Rechercher" aria-expanded="false" aria-controls="searchModalBackdrop">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      </button>
+      <button class="app-icon-button app-install-button" id="pwa-install-btn" type="button" aria-label="Installer l’application" title="Installer l’application" hidden>
+        <i class="fa-solid fa-download" aria-hidden="true"></i>
+      </button>
+      <button class="app-icon-button app-menu-button" id="hamburgerBtn" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="appMenuDrawer">
+        <i class="fa-solid fa-bars" aria-hidden="true"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-menu-scrim" id="appMenuScrim" hidden></div>
+  <aside class="app-menu-drawer" id="appMenuDrawer" aria-label="Menu principal" aria-hidden="true" inert>
+    <div class="app-menu-profile">
+      <div class="app-menu-avatar">
+        {% if user.is_authenticated and user.profil and user.profil.photo %}
+          <img src="{{ user.profil.photo.url }}" alt="Photo de {{ user.get_full_name|default:user.username }}">
+        {% else %}
+          <span class="app-menu-avatar-placeholder" aria-hidden="true"><i class="fa-solid fa-user"></i></span>
+        {% endif %}
+      </div>
+      <div class="app-menu-user">
+        {% if user.is_authenticated %}
+          <div class="app-menu-name">{{ user.get_full_name|default:user.username }}{% if user.is_staff %}<span class="verified-badge" title="Compte certifié administrateur"><i class="fa-solid fa-check" aria-hidden="true"></i></span>{% endif %}</div>
+          <div class="app-menu-email">{{ user.email|default:"Compte utilisateur" }}</div>
+        {% else %}
+          <div class="app-menu-name">Bienvenue</div>
+          <div class="app-menu-email">Connectez-vous</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <nav aria-label="Autres écrans">
+      <ul class="app-menu-list">
+        <li><button class="app-menu-item" type="button" data-open-verse><span class="app-menu-icon"><i class="fa-solid fa-book-bible" aria-hidden="true"></i></span><span>Verset du jour</span><i class="fa-solid fa-chevron-right app-menu-chevron" aria-hidden="true"></i></button></li>
+        <li><a class="app-menu-item" href="{% url 'priere:index' %}"><span class="app-menu-icon"><i class="fa-solid fa-hands-praying" aria-hidden="true"></i></span><span>Prière</span><i class="fa-solid fa-chevron-right app-menu-chevron" aria-hidden="true"></i></a></li>
+        <li><a class="app-menu-item" href="{% url 'core:dons' %}"><span class="app-menu-icon"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i></span><span>Dons</span><i class="fa-solid fa-chevron-right app-menu-chevron" aria-hidden="true"></i></a></li>
+        <li><button class="app-menu-item" type="button" data-open-invite><span class="app-menu-icon"><i class="fa-solid fa-user-plus" aria-hidden="true"></i></span><span>Inviter un ami</span><i class="fa-solid fa-chevron-right app-menu-chevron" aria-hidden="true"></i></button></li>
+        <li><a class="app-menu-item" href="{% url 'galerie:liste' %}"><span class="app-menu-icon"><i class="fa-regular fa-images" aria-hidden="true"></i></span><span>Galerie</span><i class="fa-solid fa-chevron-right app-menu-chevron" aria-hidden="true"></i></a></li>
+        <li><a class="app-menu-item" href="{% url 'histoire:index' %}"><span class="app-menu-icon"><i class="fa-solid fa-church" aria-hidden="true"></i></span><span>Qui sommes-nous</span><i class="fa-solid fa-chevron-right app-menu-chevron" aria-hidden="true"></i></a></li>
+        <li><a class="app-menu-item" href="{% url 'histoire:biographie' %}"><span class="app-menu-icon"><i class="fa-solid fa-user-tie" aria-hidden="true"></i></span><span>Notre pasteur</span><i class="fa-solid fa-chevron-right app-menu-chevron" aria-hidden="true"></i></a></li>
+        <li><a class="app-menu-item" href="{% url 'ministeres:index' %}"><span class="app-menu-icon"><i class="fa-solid fa-people-group" aria-hidden="true"></i></span><span>Nos ministères</span><i class="fa-solid fa-chevron-right app-menu-chevron" aria-hidden="true"></i></a></li>
+      </ul>
+    </nav>
+
+    <div class="app-menu-divider"></div>
+    <div class="app-menu-footer">
+      {% if user.is_authenticated %}
+        <div class="app-menu-account-actions">
+          <a href="{% url 'accounts:profil' %}" class="app-menu-social app-menu-account-profile" title="Profil - consultez et modifiez vos informations" aria-label="Mon profil"><i class="fa-solid fa-user" aria-hidden="true"></i><span>Mon profil</span></a>
+          <a href="{% url 'accounts:deconnexion' %}" class="app-menu-social app-menu-account-logout" title="Déconnexion - quitter votre espace membre" aria-label="Déconnexion"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span>Déconnexion</span></a>
+        </div>
+      {% else %}
+        <div class="app-menu-account-actions">
+          <a href="{% url 'accounts:connexion' %}" class="app-menu-social app-menu-account-profile" title="Connexion - accédez à votre espace membre" aria-label="Se connecter"><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i><span>Connexion</span></a>
+          <a href="{% url 'accounts:inscription' %}" class="app-menu-social app-menu-account-logout" title="Créer un compte - rejoignez la plateforme" aria-label="Créer un compte"><i class="fa-solid fa-user-plus" aria-hidden="true"></i><span>Créer un compte</span></a>
+        </div>
+      {% endif %}
+    </div>
+  </aside>
+
+  <nav class="app-subtabs" id="appEventSubtabs" aria-label="Rubriques événements" hidden>
+    <a href="{% url 'cultes:liste' %}" data-app-subtab="cultes">Cultes</a>
+    <a href="{% url 'evenements:liste' %}" data-app-subtab="evenements">Événements</a>
+    <a href="{% url 'articles:liste' %}" data-app-subtab="actualites">Actualités</a>
+  </nav>
+
+  {% comment %}Navigation web remplacée par la coque mobile ci-dessus.{% endcomment %}
+  {% comment %}
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <button class="top-bar-item" id="searchToggle" type="button" aria-label="Rechercher">
+        <svg viewBox="0 0 24 24" width="14" height="14"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <span>Rechercher</span>
+        <kbd class="search-kbd" style="font-size: 9px; padding: 1px 5px; opacity: 0.8; margin-left: 3px; border: 1px solid rgba(255,255,255,0.25); border-radius: 4px; background: rgba(255,255,255,0.1); color: inherit;">Ctrl+K</kbd>
+      </button>
+
+      {% if user.is_authenticated %}
+        <span class="user-greeting"><i class="fa-solid fa-user-check"></i> {{ user.first_name|default:user.username }}{% if user.is_staff %}<span class="verified-badge" title="Compte certifié administrateur"><i class="fa-solid fa-check"></i></span>{% endif %}</span>
+        {% if user.is_staff %}
+          <a href="/admin/" class="top-bar-item" title="Accéder à l’administration du site">
+            <i class="fa-solid fa-gear"></i>
+            <span>Administration</span>
+          </a>
+        {% endif %}
+        <a href="{% url 'accounts:profil' %}" class="top-bar-item" title="Voir et modifier votre profil membre">
+          <i class="fa-solid fa-user"></i>
+          <span>Mon Profil</span>
+          <small class="top-bar-item-help">mes infos</small>
+        </a>
+        <a href="{% url 'accounts:deconnexion' %}" class="top-bar-item" title="Se déconnecter de votre compte">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Déconnexion</span>
+        </a>
+      {% else %}
+        <a href="{% url 'accounts:connexion' %}" class="top-bar-item" title="Accéder à votre espace membre">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          <span>Se connecter</span>
+          <small class="top-bar-item-help">espace membre</small>
+        </a>
+        <a href="{% url 'accounts:inscription' %}" class="top-bar-item" title="Créer votre compte membre">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Créer un compte</span>
+          <small class="top-bar-item-help">rejoignez-nous</small>
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="top-bar-right">
+      <button class="top-bar-item" type="button" data-open-invite title="Inviter un ami à l'Église Smyrne" style="cursor: pointer; background: none; border: none; font-family: inherit;">
+        <i class="fa-solid fa-user-plus" style="color: #38bdf8;"></i>
+        <span>Inviter un ami</span>
+      </button>
+
+      <a href="{% url 'core:dons' %}" class="top-bar-item" style="color: #00c853; font-weight: 700;" title="Faire un don ou payer sa dîme">
+        <i class="fa-solid fa-hand-holding-heart"></i>
+        <span>Dons & Offrandes</span>
+      </a>
+
+      <button class="theme-toggle-btn" id="pwa-install-btn" type="button" style="display: none; background: #0284c7; color: #ffffff; border-color: #0284c7; font-weight: 600;" title="Installer l'application Smyrne">
+        <i class="fa-solid fa-download"></i>
+        <span>Installer l'app</span>
+      </button>
+
+      <button class="theme-toggle-btn" id="themeToggleBtn" type="button">
+        <svg viewBox="0 0 24 24" id="themeIcon" width="12" height="12"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7z"/><path d="M12 5v14c3.86 0 7-3.14 7-7s-3.14-7-7-7z"/></svg>
+        <span id="themeText">Mode Sombre</span>
+      </button>
+
+      {% if parametres_site.telephone %}
+        <a href="tel:{{ parametres_site.telephone }}" class="top-bar-item"><i class="fa-solid fa-phone"></i> <span>{{ parametres_site.telephone }}</span></a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- BANNIÈRE CULTE EN DIRECT -->
+  {% include 'includes/live_banner.html' %}
+
+  <div class="menu-backdrop" id="menuBackdrop"></div>
+
+  <!-- HEADER -->
+  <header class="header">
+    <a href="{% url 'core:accueil' %}" class="logo-container">
+      <div class="logo-img">
+        <img src="{% if parametres_site.logo %}{{ parametres_site.logo.url }}{% else %}{% static 'images/logo_smyrne.jpeg' %}{% endif %}" alt="Logo 5e CELPA Smyrne" class="logo-image">
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">{{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}</span>
+        <span class="logo-subtitle">ÉGLISE BUKAVU / RDC</span>
+      </div>
+    </a>
+
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu" type="button">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="{% url 'core:accueil' %}">Accueil</a></li>
+        <li>
+          <a href="{% url 'cultes:liste' %}">
+            Cultes
+            {% if parametres_site.en_direct_actif %}
+              <span class="live-pulse-badge" style="padding: 1px 5px; font-size: 8px; margin-left: 4px; background: #dc2626; color: #fff;">
+                <span class="live-dot" style="width: 5px; height: 5px;"></span> DIRECT
+              </span>
+            {% endif %}
+          </a>
+        </li>
+        <li><a href="{% url 'predications:liste' %}">Prédications</a></li>
+        <li><a href="{% url 'articles:liste' %}">Actualités</a></li>
+        <li><a href="{% url 'evenements:liste' %}">Événements</a></li>
+        <li><a href="{% url 'priere:index' %}">Prière</a></li>
+        <li>
+          <a href="{% url 'core:dons' %}" style="color: #00c853; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+            <i class="fa-solid fa-hand-holding-heart"></i>
+            <span>Dons</span>
+          </a>
+        </li>
+        
+        <!-- BOUTON DÉROULANT PLUS (Galerie, Histoire, Pasteur & Ministères) -->
+        <li class="nav-dropdown">
+          <button class="nav-dropdown-btn" id="plusDropdownBtn" type="button" aria-haspopup="true" aria-expanded="false">
+            <span>Plus</span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </button>
+          <ul class="nav-dropdown-menu" id="plusDropdownMenu">
+            <li>
+              <a href="{% url 'galerie:liste' %}">
+                <i class="fa-regular fa-images"></i>
+                <span>Galerie Photos</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'histoire:index' %}">
+                <i class="fa-solid fa-church"></i>
+                <span>Notre Histoire</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'histoire:biographie' %}">
+                <i class="fa-solid fa-user-tie"></i>
+                <span>Pasteur & Visionnaire</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'ministeres:index' %}">
+                <i class="fa-solid fa-users"></i>
+                <span>Nos Ministères</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li><a href="{% url 'core:accueil' %}#contact" class="nav-contact-btn">Contact</a></li>
+        {% if user.is_authenticated %}
+          <li class="nav-auth-mobile"><a href="{% url 'accounts:profil' %}"><i class="fa-solid fa-user"></i> Mon Profil</a></li>
+          <li class="nav-auth-mobile"><a href="{% url 'accounts:deconnexion' %}"><i class="fa-solid fa-right-from-bracket"></i> Déconnexion</a></li>
+        {% else %}
+          <li class="nav-auth-mobile"><a href="{% url 'accounts:connexion' %}"><i class="fa-solid fa-arrow-right-to-bracket"></i> Connexion</a></li>
+          <li class="nav-auth-mobile"><a href="{% url 'accounts:inscription' %}"><i class="fa-solid fa-user-plus"></i> Créer un compte</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+  <aside class="mobile-menu-drawer" id="mobileMenuDrawer" aria-label="Menu mobile" aria-hidden="true">
+    <div class="mobile-menu-profile">
+      {% if user.is_authenticated %}
+        <div class="mobile-menu-avatar">
+          {% if user.profil and user.profil.photo %}
+            <img src="{{ user.profil.photo.url }}" alt="{{ user.get_full_name|default:user.username }}">
+          {% else %}
+            <span class="avatar-placeholder"><i class="fa-solid fa-user"></i></span>
+          {% endif %}
+        </div>
+        <div class="mobile-menu-user">
+          <div class="mobile-menu-name">{{ user.get_full_name|default:user.username }}{% if user.is_staff %}<span class="verified-badge" title="Compte certifié administrateur"><i class="fa-solid fa-check"></i></span>{% endif %}</div>
+          <div class="mobile-menu-email">{{ user.email|default:"Compte utilisateur" }}</div>
+        </div>
+      {% else %}
+        <div class="mobile-menu-avatar">
+          <span class="avatar-placeholder"><i class="fa-solid fa-user"></i></span>
+        </div>
+        <div class="mobile-menu-user">
+          <div class="mobile-menu-name">Bienvenue</div>
+          <div class="mobile-menu-email">Connectez-vous</div>
+        </div>
+      {% endif %}
+    </div>
+
+    <ul class="mobile-menu-list">
+      <li><a href="{% url 'core:accueil' %}" class="mobile-menu-item{% if request.path == '/' %} active{% endif %}"><span class="mobile-menu-icon"><i class="fa-solid fa-house"></i></span><span>Accueil</span></a></li>
+      <li><a href="{% url 'cultes:liste' %}" class="mobile-menu-item"><span class="mobile-menu-icon"><i class="fa-solid fa-church"></i></span><span>Cultes</span></a></li>
+      <li><a href="{% url 'predications:liste' %}" class="mobile-menu-item"><span class="mobile-menu-icon"><i class="fa-solid fa-bible"></i></span><span>Prédications</span></a></li>
+      <li><a href="{% url 'articles:liste' %}" class="mobile-menu-item"><span class="mobile-menu-icon"><i class="fa-regular fa-newspaper"></i></span><span>Actualités</span></a></li>
+      <li><a href="{% url 'evenements:liste' %}" class="mobile-menu-item"><span class="mobile-menu-icon"><i class="fa-solid fa-calendar-days"></i></span><span>Événements</span></a></li>
+      <li><a href="{% url 'priere:index' %}" class="mobile-menu-item"><span class="mobile-menu-icon"><i class="fa-solid fa-hands-praying"></i></span><span>Prière</span></a></li>
+      <li><a href="{% url 'core:dons' %}" class="mobile-menu-item{% if request.path == '/dons/' %} active{% endif %}"><span class="mobile-menu-icon" style="color:#00c853;"><i class="fa-solid fa-hand-holding-heart"></i></span><span>Dons & Offrandes</span></a></li>
+      <li><a href="#" class="mobile-menu-item" data-open-invite><span class="mobile-menu-icon" style="color:#0284c7;"><i class="fa-solid fa-user-plus"></i></span><span>Inviter un ami</span></a></li>
+      <li><a href="{% url 'galerie:liste' %}" class="mobile-menu-item"><span class="mobile-menu-icon"><i class="fa-regular fa-images"></i></span><span>Galerie</span></a></li>
+      <li><a href="{% url 'histoire:index' %}" class="mobile-menu-item"><span class="mobile-menu-icon"><i class="fa-solid fa-clock-rotate-left"></i></span><span>Histoire</span></a></li>
+      <li><a href="{% url 'histoire:biographie' %}" class="mobile-menu-item"><span class="mobile-menu-icon"><i class="fa-solid fa-user-tie"></i></span><span>Pasteur</span></a></li>
+      <li><a href="{% url 'ministeres:index' %}" class="mobile-menu-item"><span class="mobile-menu-icon"><i class="fa-solid fa-people-group"></i></span><span>Ministères</span></a></li>
+    </ul>
+
+    <div class="mobile-menu-divider"></div>
+
+    <div class="mobile-menu-footer">
+      {% if user.is_authenticated %}
+        <div class="mobile-menu-account-actions">
+          <a href="{% url 'accounts:profil' %}" class="mobile-menu-social facebook" title="Profil - consultez et modifiez vos informations">
+            <i class="fa-solid fa-user"></i>
+          </a>
+          <a href="{% url 'accounts:deconnexion' %}" class="mobile-menu-social x" title="Déconnexion - quitter votre espace membre">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </a>
+        </div>
+      {% else %}
+        <div class="mobile-menu-account-actions">
+          <a href="{% url 'accounts:connexion' %}" class="mobile-menu-social facebook" title="Connexion - accédez à votre espace membre">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          </a>
+          <a href="{% url 'accounts:inscription' %}" class="mobile-menu-social x" title="Créer un compte - rejoignez la plateforme">
+            <i class="fa-solid fa-user-plus"></i>
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </aside>
+  {% endcomment %}
+
+  <!-- MODAL DE RECHERCHE GLOBALE INSTANTANÉE (CTRL+K) -->
+  {% include 'includes/search_modal.html' %}
+
+
+  <!-- MESSAGES -->
+  {% if messages %}
+    <div class="messages-container">
+      {% for message in messages %}
+        <div class="alert-msg {{ message.tags }}">
+          <span>{{ message }}</span>
+          <button class="alert-close" onclick="this.parentElement.remove()" type="button">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- CONTENU PRINCIPAL -->
+  <main id="appMain" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  <nav class="app-tabbar" id="appTabbar" aria-label="Navigation principale">
+    <a class="app-tab" href="{% url 'core:accueil' %}" data-app-tab="home">
+      <i class="fa-solid fa-house" aria-hidden="true"></i><span>Accueil</span>
+    </a>
+    <a class="app-tab" href="{% url 'predications:liste' %}" data-app-tab="sermons">
+      <i class="fa-solid fa-bible" aria-hidden="true"></i><span>Prédications</span>
+    </a>
+    <a class="app-tab app-tab-live" href="{% url 'cultes:liste' %}" data-app-tab="live" aria-label="Live"{% if parametres_site.en_direct_actif and parametres_site.en_direct_url %} data-live-active="true"{% endif %}>
+      <span class="app-live-orb"><i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i></span>
+      {% if parametres_site.en_direct_actif and parametres_site.en_direct_url %}
+        <span class="app-live-label"><span class="app-live-dot"></span>EN DIRECT</span>
+      {% else %}
+        <span>LIVE</span>
+      {% endif %}
+    </a>
+    <a class="app-tab" href="{% url 'evenements:liste' %}" data-app-tab="events">
+      <i class="fa-regular fa-calendar-days" aria-hidden="true"></i><span>Événements</span>
+    </a>
+    <a class="app-tab" href="{% if user.is_authenticated %}{% url 'accounts:profil' %}{% else %}{% url 'accounts:connexion' %}{% endif %}" data-app-tab="space">
+      <i class="fa-regular fa-user" aria-hidden="true"></i><span>Mon espace</span>
+    </a>
+  </nav>
+
+  {% comment %}Footer retiré de l’interface de l’application; les coordonnées seront replacées dans Qui sommes-nous.{% endcomment %}
+  {% comment %}
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <a href="{% url 'core:accueil' %}" class="footer-logo">
+          <div class="footer-logo-img">
+            <img src="{% if parametres_site.logo %}{{ parametres_site.logo.url }}{% else %}{% static 'images/logo_smyrne.jpeg' %}{% endif %}" alt="5e CELPA Smyrne">
+          </div>
+          <div>
+            <span class="footer-logo-title">{{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}</span>
+            <span class="footer-logo-subtitle">ÉGLISE BUKAVU / RDC</span>
+          </div>
+        </a>
+        <p>{{ parametres_site.slogan|default:"Une communauté chrétienne vivante engagée dans la prédication de l'Évangile, l'édification de la foi et le service dans la ville de Bukavu." }}</p>
+        <div class="social-links">
+          {% if parametres_site.facebook %}
+            <a href="{{ parametres_site.facebook }}" target="_blank" rel="noopener" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          {% else %}
+            <a href="#" class="social-btn" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          {% endif %}
+          {% if parametres_site.youtube %}
+            <a href="{{ parametres_site.youtube }}" target="_blank" rel="noopener" class="social-btn" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          {% else %}
+            <a href="#" class="social-btn" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          {% endif %}
+          {% if parametres_site.whatsapp %}
+            <a href="https://wa.me/{{ parametres_site.whatsapp|cut:' '|cut:'+'|cut:'-'|cut:'('|cut:')' }}" target="_blank" rel="noopener" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          {% else %}
+            <a href="#" class="social-btn" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="{% url 'core:accueil' %}">Accueil</a></li>
+          <li><a href="{% url 'cultes:liste' %}">Cultes</a></li>
+          <li><a href="{% url 'predications:liste' %}">Prédications</a></li>
+          <li><a href="{% url 'articles:liste' %}">Actualités</a></li>
+          <li><a href="{% url 'evenements:liste' %}">Événements</a></li>
+          <li><a href="{% url 'galerie:liste' %}">Galerie</a></li>
+          <li><a href="{% url 'priere:index' %}">Prière</a></li>
+          <li><a href="{% url 'histoire:index' %}">Histoire</a></li>
+          <li><a href="{% url 'ministeres:index' %}">Ministères</a></li>
+          <li><a href="{% url 'core:dons' %}" style="color: #00c853; font-weight: 700;"><i class="fa-solid fa-hand-holding-heart"></i> Dons & Offrandes</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Horaires des Cultes</h4>
+        <p><strong>Culte Dominical:</strong><br>Dimanche 09h00 - 12h00</p>
+        <p><strong>Prière d'Intercession:</strong><br>Mercredi 15h30 - 17h30</p>
+        <p><strong>Étude Biblique:</strong><br>Vendredi 16h00 - 17h30</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-location-dot"></i>
+          <span>{{ parametres_site.adresse|default:"Avenue de l'Église, Ville de Bukavu, RDC" }}</span>
+        </div>
+        {% if parametres_site.telephone %}
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-phone"></i>
+          <span>{{ parametres_site.telephone }}</span>
+        </div>
+        {% endif %}
+        {% if parametres_site.email %}
+        <div class="footer-contact-item">
+          <i class="fa-solid fa-envelope"></i>
+          <span>{{ parametres_site.email }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {% now "Y" %} {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }} - Tous droits réservés.</p>
+    </div>
+  </footer>
+  {% endcomment %}
+
+  <!-- COMPOSANTS GLOBAUX : LECTEUR AUDIO FLOTTANT & INVITATION -->
+  {% include 'includes/audio_player.html' %}
+  {% include 'includes/invite_modal.html' %}
+  {% include 'includes/verset_du_jour_widget.html' %}
+
+  <!-- JAVASCRIPT GLOBAL -->
+  <script src="{% static 'js/search.js' %}"></script>
+  <script src="{% static 'js/home-widgets.js' %}"></script>
+  <script src="{% static 'js/audio-player.js' %}"></script>
+  <script>
+    // PRELOADER
+    (function() {
+      const dotsGroup = document.getElementById('dotsGroup');
+      if (dotsGroup) {
+        const totalDots = 16;
+        const radius = 38;
+        const centerX = 50;
+        const centerY = 50;
+        for (let i = 0; i < totalDots; i++) {
+          const angle = (i / totalDots) * (2 * Math.PI) - Math.PI / 2;
+          const x = centerX + radius * Math.cos(angle);
+          const y = centerY + radius * Math.sin(angle);
+          const dotRadius = 0.8 + (i / (totalDots - 1)) * 3.2;
+          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', x.toFixed(2));
+          circle.setAttribute('cy', y.toFixed(2));
+          circle.setAttribute('r', dotRadius.toFixed(2));
+          circle.setAttribute('fill', 'var(--primary-color)');
+          const opacity = 0.25 + (i / (totalDots - 1)) * 0.75;
+          circle.setAttribute('opacity', opacity.toFixed(2));
+          dotsGroup.appendChild(circle);
+        }
+      }
+      window.addEventListener('load', function() {
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+          setTimeout(function() { preloader.classList.add('hidden'); }, 300);
+        }
+      });
+      // Sécurité si window.onload tarde
+      setTimeout(function() {
+        const preloader = document.getElementById('preloader');
+        if (preloader) preloader.classList.add('hidden');
+      }, 1500);
+    })();
+
+    // Gestion du menu hamburger mobile
+    (function() {
+      if (window.__smyrneMobileMenuInit) return;
+      window.__smyrneMobileMenuInit = true;
+
+      var hamburgerBtn = document.getElementById('hamburgerBtn');
+      var mobileMenuDrawer = document.getElementById('mobileMenuDrawer');
+      var mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+      var menuBackdrop = document.getElementById('menuBackdrop');
+
+      if (hamburgerBtn && mobileMenuDrawer) {
+        var closeMenu = function() {
+          mobileMenuDrawer.classList.remove('open');
+          mobileMenuDrawer.setAttribute('aria-hidden', 'true');
+          hamburgerBtn.classList.remove('active');
+          hamburgerBtn.setAttribute('aria-expanded', 'false');
+          document.body.classList.remove('menu-open');
+          if (mobileMenuOverlay) {
+            mobileMenuOverlay.classList.remove('active');
+          }
+          if (menuBackdrop) {
+            menuBackdrop.classList.remove('active');
+            menuBackdrop.classList.remove('show');
+          }
+        };
+
+        var openMenu = function() {
+          mobileMenuDrawer.classList.add('open');
+          mobileMenuDrawer.setAttribute('aria-hidden', 'false');
+          hamburgerBtn.classList.add('active');
+          hamburgerBtn.setAttribute('aria-expanded', 'true');
+          document.body.classList.add('menu-open');
+          if (mobileMenuOverlay) {
+            mobileMenuOverlay.classList.add('active');
+          }
+          if (menuBackdrop) {
+            menuBackdrop.classList.add('active');
+            menuBackdrop.classList.add('show');
+          }
+        };
+
+        hamburgerBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (mobileMenuDrawer.classList.contains('open')) {
+            closeMenu();
+          } else {
+            openMenu();
+          }
+        });
+
+        if (mobileMenuOverlay) {
+          mobileMenuOverlay.addEventListener('click', closeMenu);
+        }
+
+        if (menuBackdrop) {
+          menuBackdrop.addEventListener('click', closeMenu);
+        }
+
+        document.addEventListener('click', function(e) {
+          if (window.innerWidth <= 992 && mobileMenuDrawer.classList.contains('open')) {
+            if (!mobileMenuDrawer.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+              closeMenu();
+            }
+          }
+        });
+
+        window.addEventListener('resize', function() {
+          if (window.innerWidth > 992) {
+            closeMenu();
+          }
+        });
+      }
+    })();
+
+    // Gestion du Dropdown Plus sur mobile et clic
+    (function() {
+      var plusBtn = document.getElementById('plusDropdownBtn');
+      var plusDropdown = plusBtn ? plusBtn.closest('.nav-dropdown') : null;
+      if (plusBtn && plusDropdown) {
+        plusBtn.addEventListener('click', function(e) {
+          if (window.innerWidth <= 1024) {
+            e.preventDefault();
+            plusDropdown.classList.toggle('open');
+          }
+        });
+        document.addEventListener('click', function(e) {
+          if (!plusDropdown.contains(e.target)) {
+            plusDropdown.classList.remove('open');
+          }
+        });
+      }
+    })();
+  </script>
+  <!-- ===== PWA : Service Worker + Installation ===== -->
+  <script>
+    // ─── Enregistrement du Service Worker ───
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(function(reg) {
+            console.log('[PWA] Service Worker enregistré:', reg.scope);
+            reg.addEventListener('updatefound', function() {
+              const newWorker = reg.installing;
+              newWorker.addEventListener('statechange', function() {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('[PWA] Nouvelle version disponible');
+                  newWorker.postMessage({ type: 'SKIP_WAITING' });
+                }
+              });
+            });
+          })
+          .catch(function(err) {
+            console.warn('[PWA] Erreur enregistrement SW:', err);
+          });
+      });
+    }
+
+    // ─── Installation PWA uniquement après une action explicite ───
+    let deferredPrompt = null;
+    const installBtn = document.getElementById('pwa-install-btn');
+
+    function triggerPwaInstall() {
+      if (!deferredPrompt) return;
+      const promptEvent = deferredPrompt;
+      deferredPrompt = null;
+      if (installBtn) installBtn.hidden = true;
+      promptEvent.prompt();
+      promptEvent.userChoice.then(function(result) {
+        console.log('[PWA] Résultat installation:', result.outcome);
+      });
+    }
+
+    window.triggerSmyrnePwaInstall = triggerPwaInstall;
+    if (installBtn) installBtn.addEventListener('click', triggerPwaInstall);
+
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (installBtn) {
+        installBtn.hidden = false;
+      }
+    });
+
+    window.addEventListener('appinstalled', function() {
+      if (installBtn) {
+        installBtn.hidden = true;
+      }
+      deferredPrompt = null;
+    });
+  </script>
+
+  <script src="{% static 'js/app-navigation.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

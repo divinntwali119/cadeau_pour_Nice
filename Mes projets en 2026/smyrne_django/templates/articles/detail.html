@@ -1,0 +1,623 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ article.titre }} — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/actualites.css' %}">
+<style>
+  /* ============================================================
+     ÉCHELLE TYPOGRAPHIQUE
+     ============================================================ */
+  :root {
+    --fs-h1: 28px;
+    --fs-h2: 19px;
+    --fs-title: 15.5px;
+    --fs-body: 14px;
+    --fs-meta: 12px;
+    --fs-small: 11.5px;
+    --fs-badge: 11px;
+    --yt-radius: 10px;
+    --yt-radius-sm: 7px;
+    --blue: #0284c7;
+    --blue-dark: #0369a1;
+  }
+
+  /* ============================================================
+     ANIMATION AU CHARGEMENT
+     ============================================================ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in {
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in { animation: none; opacity: 1; }
+  }
+
+  /* ============================================================
+     CONTENEUR
+     ============================================================ */
+  .article-container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 22px 16px 18px;
+  }
+
+  /* ============================================================
+     BOUTON RETOUR
+     ============================================================ */
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--fs-small);
+    margin-bottom: 14px;
+    transition: background 0.18s ease, color 0.18s ease;
+  }
+  .btn-back:hover {
+    background: rgba(0,0,0,0.04);
+    color: var(--blue);
+  }
+
+  /* ============================================================
+     EN-TÊTE
+     ============================================================ */
+  .article-header {
+    margin-bottom: 12px;
+  }
+
+  .article-category {
+    display: inline-block;
+    padding: 4px 9px;
+    background: var(--blue);
+    color: #fff;
+    border-radius: 0;
+    font-size: var(--fs-badge);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .article-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: var(--fs-h1);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.9px;
+    color: var(--text-color);
+    margin: 0 0 10px;
+  }
+
+  .article-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px 16px;
+    color: var(--text-muted);
+    font-size: var(--fs-meta);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .article-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .article-meta i {
+    font-size: 11px;
+    opacity: 0.65;
+  }
+
+  /* ============================================================
+     IMAGE À LA UNE
+     ============================================================ */
+  .article-featured-img {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    border-radius: var(--yt-radius);
+    margin: 14px 0;
+    display: block;
+  }
+
+  /* ============================================================
+     VIDÉO
+     ============================================================ */
+  .article-video {
+    width: 100%;
+    margin: 14px 0;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: #05070b;
+    border: 1px solid var(--border-color);
+    border-radius: var(--yt-radius);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+  }
+  .article-video video,
+  .article-video iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    object-fit: contain;
+    background: #05070b;
+  }
+
+  /* ============================================================
+     CHAPO
+     ============================================================ */
+  .article-chapo {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 14px 0;
+    font-style: italic;
+    border-left: 3px solid var(--blue);
+    padding-left: 12px;
+  }
+
+  /* ============================================================
+     CONTENU
+     ============================================================ */
+  .article-content {
+    font-size: var(--fs-body);
+    line-height: 1.7;
+    color: var(--text-color);
+    margin-bottom: 20px;
+  }
+  .article-content p {
+    margin-bottom: 12px;
+  }
+  .article-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--yt-radius-sm);
+    margin: 12px 0;
+  }
+
+  /* ============================================================
+     BARRE D'INTERACTION
+     ============================================================ */
+  .article-interaction-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--yt-radius);
+    margin-bottom: 22px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+  }
+
+  .like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: var(--fs-small);
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  }
+  .like-btn:hover {
+    background: rgba(0,0,0,0.04);
+  }
+  .like-btn.liked {
+    background: #ef4444;
+    color: #fff;
+    border-color: #ef4444;
+  }
+
+  .share-group {
+    display: flex;
+    gap: 6px;
+  }
+
+  /* ============================================================
+     COMMENTAIRES
+     ============================================================ */
+  .comments-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: var(--fs-h2);
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    margin: 0 0 12px;
+    color: var(--text-color);
+  }
+
+  .comment-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 12px 14px;
+    border-radius: var(--yt-radius);
+    margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.025);
+  }
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+    font-size: var(--fs-small);
+    color: var(--text-muted);
+  }
+  .comment-author {
+    font-weight: 700;
+    color: var(--text-color);
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .comment-text {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-color);
+  }
+
+  .comment-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--yt-radius-sm);
+    background: var(--bg-card);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 13.5px;
+    margin-bottom: 8px;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.18s ease;
+  }
+  .comment-form textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+
+  .btn-submit-comment {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--yt-radius-sm);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 2px 8px rgba(2,132,199,0.20);
+  }
+  .btn-submit-comment:hover {
+    background: var(--blue-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(2,132,199,0.30);
+  }
+
+  .login-prompt {
+    background: var(--bg-card);
+    padding: 12px 14px;
+    border-radius: var(--yt-radius);
+    border: 1px solid var(--border-color);
+    margin-bottom: 16px;
+    font-size: 13.5px;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.025);
+  }
+  .login-prompt i {
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .login-prompt a {
+    color: var(--blue);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .login-prompt a:hover {
+    text-decoration: underline;
+  }
+
+  /* ============================================================
+     ARTICLES SIMILAIRES
+     ============================================================ */
+  .similar-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: var(--fs-h2);
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    margin: 0 0 12px;
+    color: var(--text-color);
+  }
+  .similar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .similar-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--yt-radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .similar-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+  }
+  .similar-thumb {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #0f172a;
+  }
+  .similar-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .similar-body {
+    padding: 10px 12px 12px;
+  }
+  .similar-body h4 {
+    font-size: var(--fs-title);
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0 0 6px;
+    color: var(--text-color);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .similar-read {
+    font-size: var(--fs-small);
+    color: var(--blue);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .similar-read:hover {
+    text-decoration: underline;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 600px) {
+    :root {
+      --fs-h1: 22px;
+      --fs-h2: 17px;
+      --fs-title: 15px;
+      --fs-body: 13.5px;
+      --fs-meta: 11.5px;
+      --fs-small: 11px;
+      --fs-badge: 10.5px;
+    }
+    .article-container { padding: 18px 14px 14px; }
+    .btn-back { margin-bottom: 10px; }
+    .article-title { letter-spacing: -0.5px; }
+    .article-meta { gap: 4px 10px; padding-bottom: 8px; }
+    .article-chapo { font-size: 14px; padding-left: 10px; margin: 12px 0; }
+    .article-featured-img { margin: 12px 0; }
+    .article-video { margin: 12px 0; }
+    .article-content { margin-bottom: 16px; }
+    .article-interaction-bar {
+      padding: 9px 12px;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .comment-item { padding: 10px 12px; margin-bottom: 8px; }
+    .similar-grid { grid-template-columns: 1fr; gap: 10px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="article-container fade-in">
+  <a href="{% url 'articles:liste' %}" class="btn-back">
+    <i class="fa-solid fa-arrow-left"></i> Toutes les actualités
+  </a>
+
+  <article>
+    <!-- EN-TÊTE -->
+    <div class="article-header">
+      {% if article.categorie %}
+        <span class="article-category">{{ article.categorie.nom }}</span>
+      {% endif %}
+      <h1 class="article-title">{{ article.titre }}</h1>
+      <div class="article-meta">
+        <span>
+          <i class="fa-regular fa-user"></i>
+          {{ article.auteur.first_name|default:article.auteur.username }}
+          {% if article.auteur.is_staff %}
+            <span class="verified-badge" title="Compte certifié administrateur"><i class="fa-solid fa-check"></i></span>
+          {% endif %}
+        </span>
+        <span><i class="fa-regular fa-calendar"></i> {{ article.date_publication|date:"d F Y" }}</span>
+        <span><i class="fa-regular fa-eye"></i> {{ article.vues }} vues</span>
+      </div>
+    </div>
+
+    <!-- IMAGE -->
+    {% if article.image %}
+      <img src="{{ article.image.url }}" alt="{{ article.titre }}" class="article-featured-img">
+    {% elif article.image_principale %}
+      <img src="{{ article.image_principale.url }}" alt="{{ article.titre }}" class="article-featured-img">
+    {% endif %}
+
+    <!-- VIDÉO -->
+    {% if article.video_embed_url %}
+      <div class="article-video">
+        <iframe src="{{ article.video_embed_url }}" title="Vidéo — {{ article.titre }}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+    {% elif article.video_fichier %}
+      <div class="article-video">
+        <video controls preload="metadata" playsinline {% if article.image %}poster="{{ article.image.url }}"{% endif %}>
+          <source src="{{ article.video_fichier.url }}" type="{{ article.video_mime_type }}">
+          Votre navigateur ne prend pas en charge la lecture vidéo.
+        </video>
+      </div>
+    {% endif %}
+
+    <!-- CHAPO -->
+    {% if article.resume %}
+      <div class="article-chapo">{{ article.resume }}</div>
+    {% elif article.chapo %}
+      <div class="article-chapo">{{ article.chapo }}</div>
+    {% endif %}
+
+    <!-- CORPS -->
+    <div class="article-content">
+      {% if article.corps %}
+        {{ article.corps|safe }}
+      {% else %}
+        {{ article.contenu|safe }}
+      {% endif %}
+    </div>
+
+    <!-- BARRE D'INTERACTION -->
+    <div class="article-interaction-bar">
+      {% if user.is_authenticated %}
+        <button class="like-btn {% if utilisateur_a_like %}liked{% endif %}" id="likeBtn" type="button" onclick="toggleLike()">
+          <i class="fa-solid fa-heart"></i>
+          <span id="likeCount">{{ article.nombre_likes }}</span> Likes
+        </button>
+      {% else %}
+        <a href="{% url 'accounts:connexion' %}?next={{ request.path }}" class="like-btn">
+          <i class="fa-regular fa-heart"></i>
+          <span>{{ article.nombre_likes }} Likes</span>
+        </a>
+      {% endif %}
+
+      <div class="share-group">
+        <a href="https://api.whatsapp.com/send?text={{ article.titre }}%20{{ request.build_absolute_uri }}" target="_blank" rel="noopener" class="like-btn" title="Partager sur WhatsApp">
+          <i class="fa-brands fa-whatsapp"></i>
+        </a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" rel="noopener" class="like-btn" title="Partager sur Facebook">
+          <i class="fa-brands fa-facebook-f"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- COMMENTAIRES -->
+    <section id="commentaires" style="margin-top: 26px;">
+      <h3 class="comments-title">Commentaires ({{ commentaires.count }})</h3>
+
+      {% if user.is_authenticated %}
+        <form method="post" class="comment-form" style="margin-bottom: 18px;">
+          {% csrf_token %}
+          <textarea name="texte" placeholder="Écrivez un commentaire bienveillant..." required></textarea>
+          <button type="submit" class="btn-submit-comment">Publier mon commentaire</button>
+          <small style="display:block; margin-top: 6px; color: var(--text-muted); font-size: var(--fs-small);">
+            * Votre commentaire sera visible après modération par notre équipe.
+          </small>
+        </form>
+      {% else %}
+        <div class="login-prompt">
+          <i class="fa-solid fa-lock"></i>
+          <span>Veuillez vous <a href="{% url 'accounts:connexion' %}?next={{ request.path }}">connecter</a> pour laisser un commentaire.</span>
+        </div>
+      {% endif %}
+
+      <div class="comments-list">
+        {% for comment in commentaires %}
+          <div class="comment-item">
+            <div class="comment-header">
+              <span class="comment-author">
+                {{ comment.auteur.first_name|default:comment.auteur.username }}
+                {% if comment.auteur.is_staff %}
+                  <span class="verified-badge" title="Compte certifié administrateur"><i class="fa-solid fa-check"></i></span>
+                {% endif %}
+              </span>
+              <span>{{ comment.date_creation|date:"d M Y à H:i" }}</span>
+            </div>
+            <div class="comment-text">{{ comment.texte|linebreaks }}</div>
+          </div>
+        {% empty %}
+          <p style="color: var(--text-muted); font-size: var(--fs-body);">Soyez le premier à commenter cet article !</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- ARTICLES SIMILAIRES -->
+    {% if articles_similaires %}
+      <div style="margin-top: 30px;">
+        <h3 class="similar-title">Dans la même catégorie</h3>
+        <div class="similar-grid">
+          {% for sim in articles_similaires %}
+            <a href="{% url 'articles:detail' sim.slug %}" class="similar-card">
+              {% if sim.image %}
+                <div class="similar-thumb">
+                  <img src="{{ sim.image.url }}" alt="{{ sim.titre }}">
+                </div>
+              {% elif sim.image_principale %}
+                <div class="similar-thumb">
+                  <img src="{{ sim.image_principale.url }}" alt="{{ sim.titre }}">
+                </div>
+              {% endif %}
+              <div class="similar-body">
+                <h4>{{ sim.titre }}</h4>
+                <span class="similar-read">Lire &rarr;</span>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </article>
+</div>
+
+<script>
+  function toggleLike() {
+    fetch("{% url 'articles:like' article.slug %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/json"
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.count !== undefined) {
+        document.getElementById('likeCount').textContent = data.count;
+        const btn = document.getElementById('likeBtn');
+        if (data.action === 'like') {
+          btn.classList.add('liked');
+        } else {
+          btn.classList.remove('liked');
+        }
+      }
+    })
+    .catch(err => console.error("Erreur like:", err));
+  }
+</script>
+{% endblock %}

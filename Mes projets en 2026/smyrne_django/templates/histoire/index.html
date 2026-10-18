@@ -1,0 +1,396 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notre Histoire — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/histoire.css' %}">
+<style>
+  /* ============================================================
+     AUCUNE ANIMATION
+     ============================================================ */
+  .histoire-page,
+  .histoire-page * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .page-hero {
+    text-align: center;
+    padding: 44px 16px 30px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .page-hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1.1px;
+    line-height: 1.08;
+    color: #111827;
+    margin: 0 0 10px;
+  }
+  .page-hero p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 auto;
+    max-width: 540px;
+    line-height: 1.6;
+  }
+
+  /* ============================================================
+     CONTENEUR GLOBAL
+     ============================================================ */
+  .histoire-wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 16px 40px;
+  }
+
+  /* ============================================================
+     BLOC SECTION GÉNÉRIQUE
+     ============================================================ */
+  .bloc {
+    margin-bottom: 52px;
+  }
+  .bloc:last-child { margin-bottom: 0; }
+
+  .bloc-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 12px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .bloc-head h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    color: #111827;
+    margin: 0;
+  }
+  .bloc-head .bloc-kicker {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #2563eb;
+    white-space: nowrap;
+  }
+
+  /* Version du bloc-head pour la section Introduction (pas de kicker) */
+  .bloc-head.simple {
+    justify-content: flex-start;
+    margin-bottom: 20px;
+  }
+
+  /* ============================================================
+     1. INTRODUCTION — éditorial 2 colonnes
+     ============================================================ */
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 36px;
+    align-items: start;
+  }
+  .intro-text p {
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: #374151;
+    margin: 0 0 14px;
+  }
+  .intro-text p:first-of-type::first-letter {
+    font-family: 'Poppins', sans-serif;
+    font-size: 3.2em;
+    font-weight: 800;
+    line-height: 0.9;
+    color: #111827;
+    float: left;
+    margin: 6px 10px 0 0;
+  }
+  .intro-text p:last-child { margin-bottom: 0; }
+
+  .intro-figure img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid #e5e7eb;
+  }
+  .intro-figure figcaption {
+    font-size: 11.5px;
+    color: #6b7280;
+    margin-top: 8px;
+    line-height: 1.5;
+    padding-left: 10px;
+    border-left: 2px solid #2563eb;
+  }
+
+  /* ============================================================
+     2. GALERIE — mosaïque asymétrique
+     ============================================================ */
+  .galerie-mosaique {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: 160px 160px;
+    gap: 10px;
+  }
+  .galerie-mosaique .g-item {
+    position: relative;
+    overflow: hidden;
+    background: #0f172a;
+    border: 1px solid #e5e7eb;
+  }
+  .galerie-mosaique .g-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .galerie-mosaique .g-item .g-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 10px 12px;
+    background: linear-gradient(to top, rgba(15,23,42,0.88), rgba(15,23,42,0));
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .galerie-mosaique .g-item h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.1px;
+    line-height: 1.2;
+  }
+  .galerie-mosaique .g-item span {
+    font-size: 11px;
+    opacity: 0.85;
+    font-weight: 500;
+  }
+  .galerie-mosaique .g-item:nth-child(1) { grid-column: span 4; grid-row: span 2; }
+  .galerie-mosaique .g-item:nth-child(2) { grid-column: span 2; }
+  .galerie-mosaique .g-item:nth-child(3) { grid-column: span 2; }
+  .galerie-mosaique .g-item:nth-child(4) { grid-column: 5 / span 2; grid-row: 2; }
+
+  /* ============================================================
+     3. CHORALES — bandeau horizontal
+     ============================================================ */
+  .chorales-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .chorale-tile {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .chorale-tile img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+  }
+  .chorale-tile .chorale-info {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .chorale-tile h4 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    letter-spacing: -0.1px;
+    line-height: 1.3;
+  }
+  .chorale-tile span {
+    font-size: 11.5px;
+    color: #6b7280;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 900px) {
+    .intro-grid { grid-template-columns: 1fr; gap: 20px; }
+    .galerie-mosaique {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: auto;
+    }
+    .galerie-mosaique .g-item,
+    .galerie-mosaique .g-item:nth-child(1),
+    .galerie-mosaique .g-item:nth-child(2),
+    .galerie-mosaique .g-item:nth-child(3),
+    .galerie-mosaique .g-item:nth-child(4) {
+      grid-column: auto;
+      grid-row: auto;
+      height: 160px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .page-hero { padding: 30px 14px 22px; margin-bottom: 24px; }
+    .page-hero h1 { font-size: 24px; letter-spacing: -0.6px; }
+    .page-hero p { font-size: 13px; }
+
+    .histoire-wrap { padding: 0 14px 28px; }
+    .bloc { margin-bottom: 40px; }
+    .bloc-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .bloc-head h2 { font-size: 18px; }
+    .bloc-head .bloc-kicker { font-size: 10px; }
+    .bloc-head.simple { margin-bottom: 16px; }
+
+    .intro-text p { font-size: 13.5px; line-height: 1.75; }
+    .intro-text p:first-of-type::first-letter { font-size: 2.8em; }
+
+    .galerie-mosaique { grid-template-columns: 1fr; gap: 10px; }
+    .galerie-mosaique .g-item { height: 180px; }
+
+    .chorales-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .chorale-tile .chorale-info { padding: 10px 12px 12px; }
+    .chorale-tile h4 { font-size: 12.5px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="histoire-page">
+
+  <!-- HERO -->
+  <section class="page-hero">
+    <h1>Notre Histoire</h1>
+  </section>
+
+  <div class="histoire-wrap">
+
+    <!-- ============================================================
+         1. INTRODUCTION
+         ============================================================ -->
+    <section class="bloc">
+      
+      <div class="intro-grid">
+        <div class="intro-text">
+          <p>La 5e CELPA Smyrne a été fondée au début des années 1980, dans un petit local de la ville de Bukavu. Quelques familles chrétiennes, animées par une foi profonde et un désir de vivre l'Évangile en communauté, se sont réunies pour former le noyau de ce qui allait devenir une église rayonnante.</p>
+          <p>Au fil des années, la communauté s'est agrandie, passant d'une dizaine de membres à plusieurs centaines. Les cultes, les prières et les enseignements bibliques ont façonné l'identité de l'église, qui a toujours mis un point d'honneur à servir la ville de Bukavu et à annoncer l'amour du Christ.</p>
+          <p>Aujourd'hui, la 5e CELPA Smyrne est une église établie, reconnue pour son engagement spirituel, sa jeunesse dynamique et sa mission sociale. Son histoire est jalonnée de grâces, de défis surmontés et de témoignages de foi.</p>
+        </div>
+
+        <figure class="intro-figure">
+          <img src="{% static 'images/batiment smyrne.jpeg' %}" alt="Bâtiment historique de l'église">
+          <figcaption>Le bâtiment actuel de la 5e CELPA Smyrne, à Bukavu.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         2. GALERIE
+         ============================================================ -->
+    <section class="bloc">
+      <div class="bloc-head">
+        <h2>Galerie des premières années</h2>
+        <span class="bloc-kicker">1982 — 1990</span>
+      </div>
+
+      <div class="galerie-mosaique">
+        <div class="g-item">
+          <img src="{% static 'images/eglise-sale.jpeg' %}" alt="Premier bâtiment">
+          <div class="g-overlay">
+            <h4>Premier bâtiment</h4>
+            <span>1982 — Débuts de la communauté</span>
+          </div>
+        </div>
+        <div class="g-item">
+          <img src="{% static 'images/culte10.jpg' %}" alt="Groupe de prière">
+          <div class="g-overlay">
+            <h4>Groupe de prière</h4>
+            <span>1985 — Première intercession</span>
+          </div>
+        </div>
+        <div class="g-item">
+          <img src="{% static 'images/chorale1.jpg' %}" alt="Chorale">
+          <div class="g-overlay">
+            <h4>Chorale Yerusalem</h4>
+            <span>1988 — Premier concert</span>
+          </div>
+        </div>
+        <div class="g-item">
+          <img src="{% static 'images/bapteme.jpeg' %}" alt="Baptêmes">
+          <div class="g-overlay">
+            <h4>Baptêmes</h4>
+            <span>1990 — Baptême par immersion</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+      <!-- ============================================================
+         3. CHORALES
+         ============================================================ -->
+    <section class="bloc">
+      <div class="bloc-head">
+        <h2>Anciennes chorales</h2>
+        <span class="bloc-kicker">Les voix de Smyrne</span>
+      </div>
+
+      <div class="chorales-row">
+        {% if chorales_historiques %}
+          {% for ch in chorales_historiques %}
+            <div class="chorale-tile">
+              <img src="{% if ch.image %}{{ ch.image.url }}{% else %}{% static 'images/chorale1.jpg' %}{% endif %}" alt="{{ ch.nom }}">
+              <div class="chorale-info">
+                <h4>{{ ch.nom }}</h4>
+                <span>{{ ch.periode }}</span>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="chorale-tile">
+            <img src="{% static 'images/chorale1.jpg' %}" alt="Chorale Injili">
+            <div class="chorale-info">
+              <h4>Injili Kwaya</h4>
+              <span>1985 — 1995</span>
+            </div>
+          </div>
+          <div class="chorale-tile">
+            <img src="{% static 'images/chorale1.jpg' %}" alt="Chorale Ujumbe">
+            <div class="chorale-info">
+              <h4>Ujumbe Kwaya</h4>
+              <span>1995 — 2005</span>
+            </div>
+          </div>
+          <div class="chorale-tile">
+            <img src="{% static 'images/chorale1.jpg' %}" alt="Chorale Jeunesse">
+            <div class="chorale-info">
+              <h4>Chorale de la Jeunesse</h4>
+              <span>2000 — 2010</span>
+            </div>
+          </div>
+          <div class="chorale-tile">
+            <img src="{% static 'images/chorale1.jpg' %}" alt="Chorale Ambassadeurs">
+            <div class="chorale-info">
+              <h4>Chorale Les Ambassadeurs</h4>
+              <span>2010 — 2020</span>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+  </div>
+</div>
+{% endblock %}

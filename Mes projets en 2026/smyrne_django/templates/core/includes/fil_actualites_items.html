@@ -1,0 +1,110 @@
+{% load static %}
+{% for post in feed_page.posts %}
+  <article class="home-feed-card" data-feed-item>
+    <div class="home-feed-card-header">
+      <span class="home-feed-avatar" aria-hidden="true">
+        {% if post.kind == 'article' %}<i class="fa-solid fa-newspaper"></i>
+        {% elif post.kind == 'evenement' %}<i class="fa-regular fa-calendar-days"></i>
+        {% elif post.kind == 'predication' %}<i class="fa-solid fa-bible"></i>
+        {% else %}<i class="fa-regular fa-images"></i>{% endif %}
+      </span>
+      <div class="home-feed-author">
+        <strong>{{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}</strong>
+        <span><time datetime="{{ post.date|date:'c' }}">{{ post.date|date:"j F Y" }}</time> · {{ post.category }}</span>
+      </div>
+      <i class="fa-solid fa-ellipsis home-feed-more-icon" aria-hidden="true"></i>
+    </div>
+
+    <a class="home-feed-title-link" href="{{ post.url }}">
+      <h3>{{ post.title }}</h3>
+    </a>
+
+    {% if post.image %}
+      <a class="home-feed-image-link{% if post.has_video %} home-feed-image-video{% endif %}" href="{{ post.url }}" tabindex="-1" aria-hidden="true">
+        <img src="{{ post.image.url }}" alt="" loading="lazy" decoding="async">
+        {% if post.has_video %}<span class="home-feed-image-play" aria-hidden="true"><i class="fa-solid fa-play"></i></span>{% endif %}
+      </a>
+    {% elif post.has_video %}
+      <a class="home-feed-video-link" href="{{ post.url }}" aria-label="Regarder la vidéo : {{ post.title }}">
+        <span class="home-feed-video-play" aria-hidden="true"><i class="fa-solid fa-play"></i></span>
+        <span>Cette actualité contient une vidéo</span>
+      </a>
+    {% endif %}
+
+    {% if post.excerpt %}
+      <p class="home-feed-excerpt">{{ post.excerpt|striptags|truncatewords:34 }}</p>
+    {% endif %}
+
+    <div class="home-feed-card-footer">
+      <span class="home-feed-type"><i class="fa-regular fa-bookmark" aria-hidden="true"></i> {{ post.category }}{% if post.has_video %} · <i class="fa-solid fa-video" aria-hidden="true"></i> Vidéo{% endif %}</span>
+    </div>
+
+    <div class="home-feed-actions" role="group" aria-label="Actions de la publication">
+      {% if user.is_authenticated %}
+        <button
+          type="button"
+          class="home-feed-action home-feed-like-btn{% if post.liked_by_user %} is-liked{% endif %}"
+          data-feed-like
+          data-like-url="{{ post.like_url }}"
+          aria-label="Aimer cette publication"
+          aria-pressed="{{ post.liked_by_user|yesno:'true,false' }}"
+        >
+          <i class="fa-regular fa-thumbs-up" aria-hidden="true"></i>
+          <span>Like</span>
+          <span class="home-feed-like-count" data-like-count>{{ post.like_count }}</span>
+        </button>
+      {% else %}
+        <a href="{% url 'accounts:connexion' %}?next={{ post.url|urlencode }}" class="home-feed-action" aria-label="Se connecter pour aimer cette publication">
+          <i class="fa-regular fa-thumbs-up" aria-hidden="true"></i>
+          <span>Like</span>
+          <span class="home-feed-like-count">{{ post.like_count }}</span>
+        </a>
+      {% endif %}
+      <button
+        type="button"
+        class="home-feed-action"
+        data-feed-comment-toggle
+        aria-controls="feed-comments-{{ post.kind }}-{{ post.id }}"
+        aria-expanded="false"
+      >
+        <i class="fa-regular fa-comment" aria-hidden="true"></i>
+        <span>Commenter</span>
+        <span class="home-feed-like-count" data-comment-count>{{ post.comment_count }}</span>
+      </button>
+      <a href="{{ post.url }}" class="home-feed-action home-feed-primary">
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        <span>{% if post.kind == 'galerie' %}Voir{% elif post.kind == 'evenement' %}Voir{% elif post.kind == 'predication' %}Écouter{% else %}Lire{% endif %}</span>
+      </a>
+    </div>
+
+    <div class="home-feed-comment-panel" id="feed-comments-{{ post.kind }}-{{ post.id }}" data-feed-comment-panel hidden>
+      {% if user.is_authenticated %}
+        <form class="home-feed-comment-form" data-feed-comment-form data-no-spa method="post" action="{{ post.comment_api_url }}">
+          {% csrf_token %}
+          <label class="sr-only" for="feed-comment-{{ post.kind }}-{{ post.id }}">Votre commentaire</label>
+          <textarea id="feed-comment-{{ post.kind }}-{{ post.id }}" name="texte" maxlength="2000" rows="2" required placeholder="Écrivez un commentaire…"></textarea>
+          <div class="home-feed-comment-controls">
+            <small>Votre commentaire sera visible après modération.</small>
+            <button type="submit" class="home-feed-comment-submit">Publier</button>
+          </div>
+        </form>
+      {% else %}
+        <p>Connectez-vous pour commenter cette publication.</p>
+        <a href="{% url 'accounts:connexion' %}?next={{ post.comment_url|urlencode }}">Se connecter</a>
+      {% endif %}
+      <p class="home-feed-comment-feedback" data-feed-comment-feedback role="status" aria-live="polite"></p>
+    </div>
+  </article>
+{% empty %}
+  <div class="home-feed-empty">
+    <i class="fa-regular fa-newspaper" aria-hidden="true"></i>
+    <p>Les nouvelles de la communauté apparaîtront ici.</p>
+  </div>
+{% endfor %}
+
+{% if feed_page.next_cursor %}
+  <a class="home-feed-next" href="?feed_cursor={{ feed_page.next_cursor }}" data-feed-next>
+    <span>Charger plus d’actualités</span>
+    <i class="fa-solid fa-arrow-down" aria-hidden="true"></i>
+  </a>
+{% endif %}

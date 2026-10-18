@@ -1,0 +1,115 @@
+{% load static %}
+<!-- ============================================================
+     MODAL DE RECHERCHE GLOBALE INSTANTANÉE (CTRL + K)
+     ============================================================ -->
+<div class="search-modal-backdrop" id="searchModalBackdrop" aria-hidden="true" inert role="dialog" aria-modal="true" aria-labelledby="searchModalTitle">
+  <div class="search-modal-card">
+    <div class="search-modal-topline">
+      <div class="search-modal-heading" id="searchModalTitle">
+        <span>Recherche</span>
+        <small>Dans la communauté Smyrne</small>
+      </div>
+      <button type="button" class="search-modal-close" id="searchModalClose" aria-label="Fermer la recherche">
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="search-modal-header">
+      <i class="fa-solid fa-magnifying-glass search-modal-icon" aria-hidden="true"></i>
+      <label class="visually-hidden" for="searchModalInput">Rechercher dans Smyrne</label>
+      <input type="text"
+             class="search-modal-input"
+             id="searchModalInput"
+             placeholder="Prédication, actualité, événement..."
+             autocomplete="off"
+             spellcheck="false"
+             aria-controls="searchLiveResultsList">
+      <div class="search-modal-badges">
+        <button type="button" class="search-modal-clear" id="searchModalClear" aria-label="Effacer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <kbd class="search-kbd">ESC</kbd>
+      </div>
+    </div>
+
+    <!-- Catégories de filtrage -->
+    <div class="search-categories-bar" id="searchCatBar" role="group" aria-label="Filtrer les résultats">
+      <button type="button" class="search-cat-btn active" data-filter="all" aria-pressed="true">Tous</button>
+      <button type="button" class="search-cat-btn" data-filter="Prédications" aria-pressed="false"><i class="fa-solid fa-microphone" aria-hidden="true"></i> Prédications</button>
+      <button type="button" class="search-cat-btn" data-filter="Actualités" aria-pressed="false"><i class="fa-solid fa-newspaper" aria-hidden="true"></i> Actualités</button>
+      <button type="button" class="search-cat-btn" data-filter="Événements" aria-pressed="false"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> Événements</button>
+      <button type="button" class="search-cat-btn" data-filter="Cultes" aria-pressed="false"><i class="fa-solid fa-church" aria-hidden="true"></i> Cultes</button>
+    </div>
+
+    <!-- Corps de recherche -->
+    <div class="search-modal-body" id="searchModalBody">
+      
+      <!-- Spinner chargement AJAX -->
+      <div class="search-spinner-wrap" id="searchSpinner" role="status" aria-live="polite">
+        <div class="search-spinner"></div>
+        <span>Recherche en direct dans la base de données...</span>
+      </div>
+
+      <!-- Liste des résultats dynamiques -->
+      <div id="searchLiveResultsList" aria-live="polite"></div>
+
+      <!-- État initial : Suggestions & Raccourcis de navigation -->
+      <div class="search-suggestions-section" id="searchSuggestionsSection">
+        <div class="search-suggestions-title">Recherches suggérées</div>
+        <div class="search-tags-row">
+          <button type="button" class="search-tag-chip" data-search-term="Culte dominical"><i class="fa-solid fa-church"></i> Culte dominical</button>
+          <button type="button" class="search-tag-chip" data-search-term="Pasteur"><i class="fa-solid fa-user-tie"></i> Pasteur & Berger</button>
+          <button type="button" class="search-tag-chip" data-search-term="Prière"><i class="fa-solid fa-hands-praying"></i> Requête de prière</button>
+          <button type="button" class="search-tag-chip" data-search-term="Dons"><i class="fa-solid fa-hand-holding-dollar"></i> Offrandes & Dîmes</button>
+          <button type="button" class="search-tag-chip" data-search-term="Jeunesse"><i class="fa-solid fa-users"></i> Jeunesse Smyrne</button>
+        </div>
+
+        <div class="search-suggestions-title">Accès Rapide aux Pages</div>
+        <div class="search-quick-links">
+          <a href="{% url 'cultes:liste' %}" class="search-live-item">
+            <div class="search-item-icon-box"><i class="fa-solid fa-church"></i></div>
+            <div class="search-item-info">
+              <div class="search-item-title-row">
+                <span class="search-item-title">Cultes & Horaires</span>
+                <span class="search-item-badge">Section</span>
+              </div>
+              <div class="search-item-subtitle">Programmes dominicaux et cultes de semaine</div>
+            </div>
+          </a>
+          <a href="{% url 'predications:liste' %}" class="search-live-item">
+            <div class="search-item-icon-box"><i class="fa-solid fa-bible"></i></div>
+            <div class="search-item-info">
+              <div class="search-item-title-row">
+                <span class="search-item-title">Prédications & Sermons</span>
+                <span class="search-item-badge">Section</span>
+              </div>
+              <div class="search-item-subtitle">Écouter et réécouter les enseignements audio et vidéo</div>
+            </div>
+          </a>
+          <a href="{% url 'core:dons' %}" class="search-live-item">
+            <div class="search-item-icon-box"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+            <div class="search-item-info">
+              <div class="search-item-title-row">
+                <span class="search-item-title">Dons & Offrandes</span>
+                <span class="search-item-badge">Soutien</span>
+              </div>
+              <div class="search-item-subtitle">Mobile Money (M-Pesa, Airtel, Orange) & Comptes bancaires</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Pied de page avec touches de raccourci -->
+    <div class="search-modal-footer">
+      <div class="search-footer-shortcuts">
+        <div class="search-footer-shortcut"><kbd class="search-kbd">↑</kbd><kbd class="search-kbd">↓</kbd><span>Naviguer</span></div>
+        <div class="search-footer-shortcut"><kbd class="search-kbd">↵</kbd><span>Sélectionner</span></div>
+        <div class="search-footer-shortcut"><kbd class="search-kbd">Échap</kbd><span>Fermer</span></div>
+      </div>
+      <div><span>5e CELPA Smyrne Bukavu</span></div>
+    </div>
+
+  </div>
+</div>

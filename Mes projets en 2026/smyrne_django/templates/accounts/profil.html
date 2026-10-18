@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mon Profil — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ============================================================
+     WRAPPER
+     ============================================================ */
+  .profil-wrapper {
+    max-width: 720px;
+    margin: 40px auto;
+    padding: 0 16px;
+  }
+
+  /* ============================================================
+     CARTE PRINCIPALE — fond blanc, bords nets
+     ============================================================ */
+  .profil-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05);
+  }
+
+  /* ============================================================
+     ZONE AVATAR (au-dessus du formulaire, fond blanc)
+     ============================================================ */
+  .profil-avatar-zone {
+    padding: 28px 28px 0;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .profil-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .profil-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e5e7eb;
+  }
+  .profil-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .profil-avatar .avatar-placeholder {
+    font-size: 36px;
+    color: #9ca3af;
+  }
+
+  /* Petite pastille bleue en bas à droite de l'avatar */
+  .avatar-camera {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    border: 2px solid #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(37,99,235,0.35);
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .avatar-camera:hover {
+    background: #1d4ed8;
+    transform: scale(1.05);
+  }
+
+  /* Zone boutons à droite de l'avatar */
+  .avatar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .btn-upload,
+  .btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    line-height: 1;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .btn-upload {
+    background: #2563eb;
+    color: #fff;
+  }
+  .btn-upload:hover {
+    background: #1d4ed8;
+  }
+  .btn-delete {
+    background: #f3f4f6;
+    color: #111827;
+    border-color: #e5e7eb;
+  }
+  .btn-delete:hover {
+    background: #e5e7eb;
+  }
+
+  /* Input file caché (déclenché par les boutons) */
+  .file-input-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ============================================================
+     CORPS DU FORMULAIRE
+     ============================================================ */
+  .profil-body {
+    padding: 28px;
+  }
+
+  /* Groupes de champs */
+  .form-group {
+    margin-bottom: 18px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    letter-spacing: 0.1px;
+  }
+  .form-group label .required {
+    color: #ef4444;
+    margin-left: 2px;
+  }
+
+  /* Inputs — style maquette */
+  .form-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #111827;
+    font-family: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .form-input::placeholder {
+    color: #9ca3af;
+  }
+  .form-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  }
+
+  /* Champ désactivé (comme dans la maquette pour ID par ex.) */
+  .form-input:disabled,
+  .form-input[readonly] {
+    background: #f9fafb;
+    color: #6b7280;
+    cursor: not-allowed;
+  }
+
+  /* Lignes à 2 colonnes */
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* Groupe radio (Gender dans la maquette) */
+  .radio-group {
+    display: flex;
+    gap: 20px;
+    padding-top: 6px;
+  }
+  .radio-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: #374151;
+    cursor: pointer;
+  }
+  .radio-item input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #2563eb;
+    cursor: pointer;
+  }
+
+  /* Champ avec préfixe (ex: drapeau + indicatif) */
+  .input-with-prefix {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .input-with-prefix:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  }
+  .input-prefix {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    background: #f9fafb;
+    border-right: 1px solid #e5e7eb;
+    font-size: 13px;
+    color: #374151;
+    white-space: nowrap;
+  }
+  .input-prefix .flag {
+    font-size: 15px;
+  }
+  .input-with-prefix .form-input {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .input-with-prefix .form-input:focus {
+    box-shadow: none;
+  }
+
+  /* ============================================================
+     BOUTON ENREGISTRER
+     ============================================================ */
+  .form-actions {
+    margin-top: 26px;
+  }
+  .btn-save {
+    padding: 12px 24px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 1px 2px rgba(37,99,235,0.2);
+  }
+  .btn-save:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37,99,235,0.28);
+  }
+  .btn-save:active {
+    transform: translateY(0);
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 550px) {
+    .profil-wrapper { margin: 22px auto; padding: 0 12px; }
+    .profil-avatar-zone { padding: 22px 20px 0; gap: 16px; }
+    .profil-avatar { width: 80px; height: 80px; }
+    .avatar-camera { width: 24px; height: 24px; font-size: 11px; }
+    .profil-body { padding: 22px 20px; }
+    .form-row { grid-template-columns: 1fr; gap: 14px; }
+    .radio-group { gap: 16px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profil-wrapper">
+  <div class="profil-card">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- ============ ZONE AVATAR ============ -->
+      <div class="profil-avatar-zone">
+        <div class="profil-avatar-wrap">
+          <div class="profil-avatar">
+            {% if profil.photo %}
+              <img src="{{ profil.photo.url }}" alt="Photo de {{ user.username }}" id="avatarPreview">
+            {% else %}
+              <span class="avatar-placeholder" id="avatarPlaceholder"><i class="fa-solid fa-user"></i></span>
+              <img src="" alt="" id="avatarPreview" style="display:none;">
+            {% endif %}
+          </div>
+          <label for="photo" class="avatar-camera" title="Changer la photo">
+            <i class="fa-solid fa-camera"></i>
+          </label>
+        </div>
+
+        <div class="avatar-actions">
+          <label for="photo" class="btn-upload">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+            Upload New
+          </label>
+          {% if profil.photo %}
+            <button type="submit" name="delete_avatar" value="1" class="btn-delete" onclick="return confirm('Supprimer votre photo de profil ?');">
+              <i class="fa-regular fa-trash-can"></i>
+              Delete avatar
+            </button>
+          {% else %}
+            <button type="button" class="btn-delete" disabled style="opacity:.5; cursor:not-allowed;">
+              <i class="fa-regular fa-trash-can"></i>
+              Delete avatar
+            </button>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ============ CORPS DU FORMULAIRE ============ -->
+      <div class="profil-body">
+
+        <!-- Prénom / Nom -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first_name">First Name <span class="required">*</span></label>
+            <input type="text" name="first_name" id="first_name" class="form-input" value="{{ user.first_name }}" placeholder="First name" required>
+          </div>
+          <div class="form-group">
+            <label for="last_name">Last Name <span class="required">*</span></label>
+            <input type="text" name="last_name" id="last_name" class="form-input" value="{{ user.last_name }}" placeholder="Last name" required>
+          </div>
+        </div>
+
+        <!-- Email / Téléphone -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" class="form-input" value="{{ user.email }}" placeholder="example@email.com">
+          </div>
+          <div class="form-group">
+            <label for="telephone">Mobile Number <span class="required">*</span></label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">
+                <span class="flag">🇨🇩</span> +243
+              </span>
+              <input type="text" name="telephone" id="telephone" class="form-input" value="{{ profil.telephone }}" placeholder="0000 000 0000">
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="form-group">
+          <label for="bio">Bio courte</label>
+          <textarea name="bio" id="bio" class="form-input" rows="3" placeholder="Quelques mots sur vous...">{{ profil.bio }}</textarea>
+        </div>
+
+        <!-- Champ caché : input file réel -->
+        <input type="file" name="photo" id="photo" accept="image/*" class="file-input-hidden">
+
+        <!-- ============ BOUTON ENREGISTRER ============ -->
+        <div class="form-actions">
+          <button type="submit" class="btn-save">
+            <i class="fa-solid fa-floppy-disk"></i>
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ APERÇU AVATAR EN DIRECT ============ -->
+<script>
+  (function () {
+    const input = document.getElementById('photo');
+    const preview = document.getElementById('avatarPreview');
+    const placeholder = document.getElementById('avatarPlaceholder');
+    if (!input || !preview) return;
+
+    input.addEventListener('change', function (e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        preview.src = ev.target.result;
+        preview.style.display = 'block';
+        if (placeholder) placeholder.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    });
+  })();
+</script>
+{% endblock %}

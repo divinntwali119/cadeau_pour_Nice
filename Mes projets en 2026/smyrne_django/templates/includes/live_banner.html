@@ -1,0 +1,114 @@
+{% load static %}
+<!-- ============================================================
+     BANNIÈRE CULTE EN DIRECT & MODAL VIDÉO
+     ============================================================ -->
+{% if parametres_site.en_direct_actif and parametres_site.en_direct_url %}
+<div class="smyrne-live-banner" id="smyrneLiveBanner" role="alert">
+  <div class="live-banner-content">
+    <span class="live-pulse-badge">
+      <span class="live-dot"></span>
+      <span>EN DIRECT</span>
+    </span>
+    <span class="live-banner-title">
+      {{ parametres_site.en_direct_titre|default:"Culte en direct — Suivez la transmission en direct de l'Église Smyrne" }}
+    </span>
+  </div>
+
+  <div class="live-banner-actions">
+    <button type="button" class="btn-watch-live" id="openLiveModalBtn">
+      <i class="fa-solid fa-play"></i>
+      <span>Regarder</span>
+    </button>
+    <button type="button" class="live-banner-close" id="closeLiveBannerBtn" aria-label="Fermer la bannière pour cette session">
+      &times;
+    </button>
+  </div>
+</div>
+
+<!-- MODAL DU DIRECT -->
+<div class="live-video-modal-backdrop" id="liveVideoModalBackdrop" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="live-video-modal-card">
+    <div class="live-video-header">
+      <div class="live-video-title">
+        <span class="live-pulse-badge" style="background:#dc2626;"><span class="live-dot"></span> EN DIRECT</span>
+        <span>{{ parametres_site.en_direct_titre|default:"Culte en direct" }}</span>
+      </div>
+      <button type="button" class="live-video-close-btn" id="closeLiveVideoModalBtn" aria-label="Fermer">&times;</button>
+    </div>
+
+    <div class="live-video-iframe-wrap">
+      <iframe id="liveVideoIframe"
+              src=""
+              data-src="{{ parametres_site.get_embed_en_direct_url }}"
+              title="Transmission Culte en Direct"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+      </iframe>
+    </div>
+
+    <div class="live-video-footer">
+      <span>5e CELPA Smyrne Bukavu — Culte et célébration</span>
+      <a href="{{ parametres_site.en_direct_url }}" target="_blank" rel="noopener" style="color:#38bdf8; text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+        <span>Ouvrir sur la plateforme</span>
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    var banner = document.getElementById('smyrneLiveBanner');
+    var modal = document.getElementById('liveVideoModalBackdrop');
+    var openBtn = document.getElementById('openLiveModalBtn');
+    var closeBannerBtn = document.getElementById('closeLiveBannerBtn');
+    var closeModalBtn = document.getElementById('closeLiveVideoModalBtn');
+    var iframe = document.getElementById('liveVideoIframe');
+
+    // Vérifier si la bannière a été fermée pendant la session
+    if (sessionStorage.getItem('smyrne_live_dismissed') === '1' && banner) {
+      banner.classList.add('hidden');
+    }
+
+    if (closeBannerBtn && banner) {
+      closeBannerBtn.addEventListener('click', function() {
+        banner.classList.add('hidden');
+        sessionStorage.setItem('smyrne_live_dismissed', '1');
+      });
+    }
+
+    if (openBtn && modal && iframe) {
+      openBtn.addEventListener('click', function() {
+        iframe.src = iframe.getAttribute('data-src') || '';
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+      });
+    }
+
+    function closeVideoModal() {
+      if (!modal) return;
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      if (iframe) iframe.src = '';
+    }
+
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', closeVideoModal);
+    }
+
+    if (modal) {
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeVideoModal();
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+        closeVideoModal();
+      }
+    });
+  })();
+</script>
+{% endif %}

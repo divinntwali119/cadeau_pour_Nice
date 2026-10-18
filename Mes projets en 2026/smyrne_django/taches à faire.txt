@@ -1,0 +1,36 @@
+=============================================================
+FONCTIONNALITÉS AJOUTÉES AU SITE DE L'ÉGLISE 5e CELPA SMYRNE
+=============================================================
+
+[X] 1. Lecteur Audio Flottant (Écoute continue en arrière-plan)
+    - Barre flottante persistante en bas d'écran avec mode complet et mini-pilule rétractée.
+    - Contrôles complets : Play/Pause, Recul 15s, Avance 15s, Vitesse (1x à 2x), Volume, Onde audio animée.
+    - Mémorisation de la progression avec localStorage pour continuer l'écoute lors de la navigation.
+    - Boutons d'écoute directe intégrés sur les cartes et pages de prédications.
+
+[X] 2. Module Dons & Offrandes (Mobile Money & Banques)
+    - Intégration complète Mobile Money (M-Pesa, Airtel, Orange) + Comptes Bancaires (Rawbank, TMB).
+    - Copie en un clic avec notification "Copié !" et instructions pas à pas (*1222#, *501#, *144#).
+    - Liens d'accès direct et mis en valeur dans la Topbar, la barre de navigation, le menu mobile et le footer.
+    - Données de base initialisées et prêtes à l'emploi.
+
+[X] 3. Recherche Globale Instantanée (Ctrl+K / Command Palette)
+    - Raccourci clavier universel Ctrl+K (ou Cmd+K sur Mac) et raccourci touche Échap.
+    - Modale moderne type Spotlight avec autocomplétion en direct (AJAX debounce 250ms).
+    - Recherche multi-modèles (Prédications, Actualités, Événements, Cultes) avec badges colorés.
+    - Navigation intégrale au clavier (Flèches Haut/Bas pour sélectionner, Entrée pour ouvrir).
+
+[X] 4. Widget « Verset du Jour » partageable sur WhatsApp
+    - Section spirituelle soignée sur la page d'accueil avec badge de thème biblique (Foi, Paix, Espérance...).
+    - Bouton "Partager sur WhatsApp" avec message préformaté et vœux fraternels.
+    - Bouton "Copier" avec retour visuel par notification toast.
+
+[X] 5. Bannière Culte en Direct & Lecteur Vidéo Intégré
+    - Indicateur rouge dynamique "● EN DIRECT" activable depuis l'administration du site.
+    - Bouton "Regarder" ouvrant un lecteur vidéo modal superposé (YouTube / Facebook Live).
+    - Fermeture pour la session et badge visuel discret dans le menu de navigation.
+
+[X] 6. Bouton « Inviter un ami » (WhatsApp & Partage Réseaux)
+    - Bouton dédié dans la Topbar et dans le tiroir mobile.
+    - Modale avec 3 modèles d'invitation pré-remplis (Culte dominical, Prière de semaine, Découverte du site).
+    - Partage direct sur WhatsApp, partage natif smartphone (Web Share API) et copie rapide.

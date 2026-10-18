@@ -1,0 +1,479 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Prière & Témoignages — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/priere.css' %}">
+<style>
+  /* ============================================================
+     WRAPPER
+     ============================================================ */
+  .priere-wrapper {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 16px 14px 28px;
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .page-hero {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .eyebrow {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #2563eb;
+    background: rgba(37,99,235,0.08);
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+  .page-hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    line-height: 1.15;
+    color: #111827;
+    margin: 0 0 6px;
+  }
+  .page-hero p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0 auto;
+    max-width: 480px;
+    line-height: 1.5;
+  }
+
+  /* ============================================================
+     RÉSUMÉ (3 pastilles)
+     ============================================================ */
+  .priere-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .summary-stat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .summary-icon {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: rgba(37,99,235,0.10);
+    color: #2563eb;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .summary-icon.accent {
+    background: rgba(22,163,74,0.10);
+    color: #16a34a;
+  }
+  .summary-icon.soft {
+    background: rgba(124,58,237,0.10);
+    color: #7c3aed;
+  }
+  .summary-stat strong {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1px;
+  }
+  .summary-stat small {
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  /* ============================================================
+     EN-TÊTE DE SECTION
+     ============================================================ */
+  .section-header {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  .section-header h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: #111827;
+    margin: 0 0 3px;
+  }
+  .section-header p {
+    font-size: 12.5px;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* ============================================================
+     GRILLE DES FORMULAIRES
+     ============================================================ */
+  .priere-forms-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .priere-form-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 18px 16px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 18px rgba(0,0,0,0.045);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    box-shadow: 0 2px 8px rgba(37,99,235,0.20);
+  }
+  .card-icon.green {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 2px 8px rgba(34,197,94,0.20);
+  }
+  .card-kicker {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    font-weight: 700;
+    color: #2563eb;
+    margin: 0 0 1px;
+  }
+  .card-header h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    line-height: 1.2;
+  }
+  .card-subtitle {
+    font-size: 12.5px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin: 0 0 12px;
+  }
+
+  /* ============================================================
+     FORMULAIRES
+     ============================================================ */
+  .form-group {
+    margin-bottom: 10px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #111827;
+    font-family: inherit;
+    font-size: 13px;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: #9ca3af;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  }
+  .form-group textarea {
+    resize: vertical;
+    min-height: 84px;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 2px 0 12px;
+  }
+  .checkbox-row input {
+    width: auto;
+    margin: 0;
+    accent-color: #2563eb;
+  }
+  .checkbox-row label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+  }
+
+  /* ============================================================
+     BOUTONS
+     ============================================================ */
+  .btn-submit-priere,
+  .btn-submit-temoignage {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #fff;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn-submit-priere {
+    background: #2563eb;
+    box-shadow: 0 1px 2px rgba(37,99,235,0.2);
+  }
+  .btn-submit-priere:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37,99,235,0.28);
+  }
+  .btn-submit-temoignage {
+    background: #16a34a;
+    box-shadow: 0 1px 2px rgba(22,163,74,0.2);
+  }
+  .btn-submit-temoignage:hover {
+    background: #15803d;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(22,163,74,0.28);
+  }
+
+  /* ============================================================
+     TÉMOIGNAGES
+     ============================================================ */
+  .section-temoignages {
+    margin-top: 24px;
+  }
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .testimonial-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 14px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    position: relative;
+  }
+  .quote-mark {
+    font-size: 26px;
+    line-height: 1;
+    color: rgba(37,99,235,0.22);
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .testimonial-text {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #111827;
+    font-style: italic;
+    margin: 0 0 10px;
+  }
+  .testimonial-author {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #2563eb;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 820px) {
+    .priere-summary { grid-template-columns: 1fr; gap: 8px; }
+    .priere-forms-grid { grid-template-columns: 1fr; gap: 12px; }
+  }
+  @media (max-width: 550px) {
+    .priere-wrapper { padding: 14px 12px 22px; }
+    .page-hero h1 { font-size: 22px; letter-spacing: -0.5px; }
+    .page-hero p { font-size: 12.5px; }
+    .priere-form-card { padding: 16px 14px 14px; }
+    .card-header h3 { font-size: 15px; }
+    .card-icon { width: 36px; height: 36px; font-size: 13px; }
+    .testimonials-grid { grid-template-columns: 1fr; gap: 8px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="priere-wrapper">
+
+  <!-- HERO -->
+  <section class="page-hero fade-in">
+    <h1>Prière & Témoignages</h1>
+    <p>Confiez-nous vos sujets de prière ou partagez les merveilles de Dieu dans votre vie.</p>
+  </section>
+
+  <!-- RÉSUMÉ -->
+  <section class="priere-summary fade-in">
+    <div class="summary-stat">
+      <span class="summary-icon"><i class="fa-solid fa-hands-praying"></i></span>
+      <div>
+        <strong>Intercession</strong>
+        <small>Priez avec nous</small>
+      </div>
+    </div>
+    <div class="summary-stat">
+      <span class="summary-icon accent"><i class="fa-solid fa-heart"></i></span>
+      <div>
+        <strong>Encouragement</strong>
+        <small>Partagez vos grâces</small>
+      </div>
+    </div>
+    <div class="summary-stat">
+      <span class="summary-icon soft"><i class="fa-solid fa-church"></i></span>
+      <div>
+        <strong>Communauté</strong>
+        <small>Unis dans la foi</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMULAIRES -->
+  <section class="priere-forms-section fade-in">
+    <div class="section-header">
+      <h2>Partagez avec nous</h2>
+      <p>La prière fervente du juste a une grande efficacité.</p>
+    </div>
+
+    <div class="priere-forms-grid">
+      <!-- DEMANDE DE PRIÈRE -->
+      <div class="priere-form-card">
+        <div class="card-header">
+          <div class="card-icon"><i class="fa-regular fa-paper-plane"></i></div>
+          <div>
+            <p class="card-kicker">Demande</p>
+            <h3>Demande de Prière</h3>
+          </div>
+        </div>
+        <p class="card-subtitle">Confiez-nous vos besoins, vos fardeaux et vos requêtes. Notre équipe pastorale et d'intercession priera fidèlement pour vous.</p>
+
+        <form method="post" action="{% url 'priere:index' %}">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="demande">
+          <div class="form-group">
+            <label for="nom-priere">Votre nom complet *</label>
+            <input type="text" id="nom-priere" name="nom" placeholder="Votre nom" required>
+          </div>
+          <div class="form-group">
+            <label for="email-priere">Adresse email (optionnelle)</label>
+            <input type="email" id="email-priere" name="email" placeholder="votre@email.com">
+          </div>
+          <div class="form-group">
+            <label for="sujet-priere">Sujet de prière *</label>
+            <input type="text" id="sujet-priere" name="sujet" placeholder="Ex: Guérison, Famille, Travail..." required>
+          </div>
+          <div class="form-group">
+            <label for="message-priere">Votre besoin détaillé *</label>
+            <textarea id="message-priere" name="message" placeholder="Décrivez votre requête de prière..." required></textarea>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" id="confidentiel" name="confidentiel">
+            <label for="confidentiel">Confidentiel (équipe pastorale seulement)</label>
+          </div>
+          <button type="submit" class="btn-submit-priere">
+            <i class="fa-regular fa-paper-plane"></i> Envoyer ma requête
+          </button>
+        </form>
+      </div>
+
+      <!-- TÉMOIGNAGE -->
+      <div class="priere-form-card">
+        <div class="card-header">
+          <div class="card-icon green"><i class="fa-solid fa-share-nodes"></i></div>
+          <div>
+            <p class="card-kicker">Témoignage</p>
+            <h3>Envoyer un Témoignage</h3>
+          </div>
+        </div>
+        <p class="card-subtitle">Partagez ce que Dieu a fait dans votre vie pour fortifier et encourager toute la communauté.</p>
+
+        <form method="post" action="{% url 'priere:index' %}">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="temoignage">
+          <div class="form-group">
+            <label for="nom-temoignage">Votre nom complet *</label>
+            <input type="text" id="nom-temoignage" name="nom" placeholder="Votre nom" required>
+          </div>
+          <div class="form-group">
+            <label for="message-temoignage">Votre témoignage *</label>
+            <textarea id="message-temoignage" name="texte" placeholder="Racontez ce que Dieu a accompli..." required></textarea>
+          </div>
+          <button type="submit" class="btn-submit-temoignage">
+            <i class="fa-solid fa-share-nodes"></i> Soumettre mon témoignage
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- TÉMOIGNAGES PUBLIÉS -->
+  {% if temoignages %}
+    <section class="section-temoignages fade-in">
+      <div class="section-header">
+        <h2>Témoignages de la Grâce</h2>
+        <p>Ce que Dieu a fait au milieu de nous</p>
+      </div>
+      <div class="testimonials-grid">
+        {% for tem in temoignages %}
+          <article class="testimonial-card">
+            <div class="quote-mark">“</div>
+            <p class="testimonial-text">{{ tem.texte }}</p>
+            <strong class="testimonial-author">— {{ tem.nom }}</strong>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+</div>
+{% endblock %}

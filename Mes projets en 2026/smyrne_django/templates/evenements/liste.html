@@ -1,0 +1,521 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Événements — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/evenements.css' %}">
+<style>
+  /* ============================================================
+     ÉCHELLE TYPOGRAPHIQUE
+     ============================================================ */
+  :root {
+    --fs-h1: 30px;
+    --fs-h2: 22px;
+    --fs-card: 15px;
+    --fs-body: 13px;
+    --fs-meta: 12px;
+    --fs-badge: 11.5px;
+    --yt-radius: 12px;
+    --yt-radius-sm: 8px;
+    --blue: #0284c7;
+    --blue-dark: #0369a1;
+  }
+
+  /* ============================================================
+     ANIMATION AU CHARGEMENT
+     ============================================================ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in {
+    opacity: 0;
+    animation: fadeUp 0.55s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+  .fade-in:nth-of-type(1) { animation-delay: 0.05s; }
+  .fade-in:nth-of-type(2) { animation-delay: 0.13s; }
+  .fade-in:nth-of-type(3) { animation-delay: 0.21s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in { animation: none; opacity: 1; }
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .page-hero {
+    padding: 44px 16px 30px;
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .page-hero h1 {
+    font-size: var(--fs-h1);
+    font-weight: 800;
+    margin: 0 0 10px;
+    letter-spacing: -1.1px;
+    line-height: 1.08;
+    color: var(--text-color);
+  }
+  .page-hero p {
+    font-size: var(--fs-body);
+    font-weight: 400;
+    color: var(--text-muted);
+    margin: 0 auto;
+    max-width: 460px;
+    line-height: 1.6;
+  }
+
+  /* ============================================================
+     SECTIONS
+     ============================================================ */
+  .upcoming-events-section,
+  .past-events-section {
+    max-width: 1200px;
+    margin: 0 auto 44px;
+    padding: 0 16px;
+  }
+  .section-header {
+    margin-bottom: 18px;
+  }
+  .section-header h2 {
+    font-size: var(--fs-h2);
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    line-height: 1.2;
+    color: var(--text-color);
+    margin: 0;
+    position: relative;
+    padding-left: 16px;
+  }
+  .section-header h2::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    border-radius: 2px;
+    background: var(--text-color);
+    opacity: 0.9;
+  }
+  .section-header p { display: none; }
+
+  /* ============================================================
+     GRILLES
+     ============================================================ */
+  .events-grid,
+  .past-events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  /* ============================================================
+     CARTE À VENIR
+     ============================================================ */
+  .event-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--yt-radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.055), 0 2px 6px rgba(0,0,0,0.035);
+  }
+
+  .event-thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #0f172a;
+  }
+  .event-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ============================================================
+     BADGE À VENIR — BLEU, ANGLE DROIT
+     ============================================================ */
+  .event-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: var(--fs-badge);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    padding: 7px 13px;
+    border-radius: 0;
+    color: #fff;
+    background: var(--blue);
+    line-height: 1;
+    box-shadow: 0 4px 12px rgba(2,132,199,0.32), 0 1px 3px rgba(2,132,199,0.24);
+  }
+  .event-badge i {
+    font-size: 10px;
+    opacity: 0.9;
+  }
+  .event-badge .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    animation: badgePulse 1.6s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes badgePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.75); }
+  }
+
+  .event-body {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .event-body h4 {
+    font-size: var(--fs-card);
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0 0 8px;
+    color: var(--text-color);
+    letter-spacing: -0.1px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Méta — pastilles blanches */
+  .event-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .event-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-meta);
+    font-weight: 600;
+    color: var(--text-color);
+    background: #fff;
+    border: 1px solid var(--border-color);
+    padding: 5px 11px;
+    border-radius: 999px;
+    line-height: 1;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .event-meta span i {
+    opacity: 0.55;
+    font-size: 11px;
+  }
+
+  .event-body p {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin: 0 0 12px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ============================================================
+     BOUTON — BLEU, ANGLE DROIT (cohérent avec le badge)
+     ============================================================ */
+  .event-actions { margin-top: auto; }
+  .btn-contact-event {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    font-size: var(--fs-body);
+    font-weight: 600;
+    border-radius: 0; /* angle droit */
+    background: var(--blue);
+    color: #fff;
+    text-decoration: none;
+    line-height: 1;
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 2px 10px rgba(2,132,199,0.25);
+  }
+  .btn-contact-event:hover {
+    transform: translateY(-1px);
+    background: var(--blue-dark);
+    box-shadow: 0 10px 20px rgba(2,132,199,0.38);
+  }
+  .btn-contact-event i { font-size: 12px; opacity: 0.95; }
+
+  /* ============================================================
+     CARTE PASSÉE — désaturée, plus discrète
+     ============================================================ */
+  .past-event-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--yt-radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.035);
+    opacity: 0.92;
+  }
+
+  .past-event-thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #0f172a;
+  }
+  .past-event-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(85%) contrast(0.95) brightness(0.98);
+  }
+  .past-event-thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.08);
+    pointer-events: none;
+  }
+
+  /* ============================================================
+     BADGE PASSÉ — blanc, angle droit
+     ============================================================ */
+  .past-event-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-badge);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    padding: 7px 13px;
+    border-radius: 0;
+    color: var(--text-color);
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    line-height: 1;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .past-event-badge i {
+    font-size: 10px;
+    opacity: 0.6;
+  }
+
+  .past-event-body {
+    padding: 14px 16px 16px;
+  }
+  .past-event-body h4 {
+    font-size: var(--fs-card);
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0 0 8px;
+    color: var(--text-muted);
+    letter-spacing: -0.1px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .past-event-body p {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 900px) {
+    :root { --fs-h1: 26px; --fs-h2: 20px; }
+    .events-grid,
+    .past-events-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 14px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    :root {
+      --fs-h1: 23px;
+      --fs-h2: 18px;
+      --fs-card: 14.5px;
+      --fs-body: 12.5px;
+      --fs-meta: 11.5px;
+      --fs-badge: 11px;
+    }
+    .page-hero { padding: 30px 14px 22px; margin-bottom: 26px; }
+
+    .upcoming-events-section,
+    .past-events-section {
+      margin-bottom: 32px;
+      padding: 0 14px;
+    }
+    .section-header { margin-bottom: 14px; }
+    .section-header h2 { padding-left: 13px; }
+    .section-header h2::before { height: 17px; }
+
+    .events-grid,
+    .past-events-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .event-badge,
+    .past-event-badge {
+      top: 12px;
+      left: 12px;
+      padding: 6px 11px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <!-- HERO -->
+  <section class="page-hero fade-in">
+    <h1>Nos Événements</h1>
+    <p>Participez aux conférences, célébrations et moments forts de notre communauté.</p>
+  </section>
+
+  <!-- ÉVÉNEMENTS À VENIR -->
+  <section class="upcoming-events-section fade-in">
+    <div class="section-header">
+      <h2>Événements à venir</h2>
+    </div>
+    <div class="events-grid">
+      {% if evenements_a_venir %}
+        {% for evt in evenements_a_venir %}
+          <div class="event-card">
+            <div class="event-thumb">
+              <img src="{% if evt.image %}{{ evt.image.url }}{% else %}{% static 'images/evenement1.jpeg' %}{% endif %}" alt="{{ evt.titre }}">
+              <span class="event-badge">
+                <span class="dot"></span> À venir
+              </span>
+            </div>
+            <div class="event-body">
+              <h4>{{ evt.titre }}</h4>
+              <div class="event-meta">
+                <span><i class="fa-regular fa-calendar"></i> {{ evt.date_debut|date:"d M Y" }}</span>
+                <span><i class="fa-regular fa-clock"></i> {{ evt.date_debut|time:"H\hi" }}</span>
+                {% if evt.lieu %}
+                  <span><i class="fa-solid fa-location-dot"></i> {{ evt.lieu }}</span>
+                {% endif %}
+              </div>
+              <p>{{ evt.description|striptags|truncatewords:20 }}</p>
+              <div class="event-actions">
+                <a href="{% url 'evenements:detail' evt.slug %}" class="btn-contact-event">
+                  <i class="fa-solid fa-ticket"></i> S'inscrire
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="event-card">
+          <div class="event-thumb">
+            <img src="{% static 'images/evenement1.jpeg' %}" alt="GAEL CELEBRATION">
+            <span class="event-badge"><span class="dot"></span> À venir</span>
+          </div>
+          <div class="event-body">
+            <h4>GAEL CELEBRATION 2027</h4>
+            <div class="event-meta">
+              <span><i class="fa-regular fa-calendar"></i> 09 Août 2027</span>
+              <span><i class="fa-regular fa-clock"></i> 09H00 - 16H00</span>
+            </div>
+            <p>Un grand rassemblement de prière et de louange pour commencer l'année dans la présence de Dieu.</p>
+            <div class="event-actions">
+              <a href="{% url 'core:accueil' %}#contact" class="btn-contact-event"><i class="fa-regular fa-envelope"></i> Nous contacter</a>
+            </div>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-thumb">
+            <img src="{% static 'images/evenement2.jpeg' %}" alt="Camp de Jeunesse">
+            <span class="event-badge"><span class="dot"></span> À venir</span>
+          </div>
+          <div class="event-body">
+            <h4>SANJOLA CELEBRATION 2027</h4>
+            <div class="event-meta">
+              <span><i class="fa-regular fa-calendar"></i> 22-24 Février 2027</span>
+              <span><i class="fa-regular fa-clock"></i> 14H00 - 17H00</span>
+            </div>
+            <p>Un camp spirituel pour les jeunes avec des enseignements, des activités et des moments de partage.</p>
+            <div class="event-actions">
+              <a href="{% url 'core:accueil' %}#contact" class="btn-contact-event"><i class="fa-regular fa-envelope"></i> Nous contacter</a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- ÉVÉNEMENTS PASSÉS -->
+  <section class="past-events-section fade-in">
+    <div class="section-header">
+      <h2>Événements passés</h2>
+    </div>
+    <div class="past-events-grid">
+      {% if evenements_passes %}
+        {% for evt in evenements_passes %}
+          <div class="past-event-card">
+            <div class="past-event-thumb">
+              <img src="{% if evt.image %}{{ evt.image.url }}{% else %}{% static 'images/evenement4.jpeg' %}{% endif %}" alt="{{ evt.titre }}">
+              <span class="past-event-badge"><i class="fa-solid fa-check"></i> Passé</span>
+            </div>
+            <div class="past-event-body">
+              <h4>{{ evt.titre }}</h4>
+              <div class="event-meta">
+                <span><i class="fa-regular fa-calendar"></i> {{ evt.date_debut|date:"d M Y" }}</span>
+              </div>
+              <p>{{ evt.description|striptags|truncatewords:15 }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="past-event-card">
+          <div class="past-event-thumb">
+            <img src="{% static 'images/evenement4.jpeg' %}" alt="CELEBRATION EXETAT">
+            <span class="past-event-badge"><i class="fa-solid fa-check"></i> Passé</span>
+          </div>
+          <div class="past-event-body">
+            <h4>CELEBRATION EXETAT 2026</h4>
+            <div class="event-meta">
+              <span><i class="fa-regular fa-calendar"></i> 21 Décembre 2026</span>
+            </div>
+            <p>Action de grâce pour la réussite de nos diplômés de la communauté Smyrne.</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

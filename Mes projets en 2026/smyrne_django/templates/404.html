@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page introuvable (404) — Église Smyrne</title>
+  <link rel="icon" type="image/png" href="{% static 'images/pwa/favicon-32x32.png' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #0f172a 100%);
+      color: #fff;
+    }
+    body {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 100vh; padding: 2rem; text-align: center;
+    }
+    .error-logo {
+      width: 80px; height: 80px; border-radius: 1rem;
+      margin: 0 auto 1.5rem; display: block;
+      box-shadow: 0 6px 20px rgba(2,132,199,0.4);
+    }
+    .error-code {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(5rem, 18vw, 10rem);
+      font-weight: 800; line-height: 1;
+      background: linear-gradient(135deg, #0284c7, #00c853);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 1rem;
+    }
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      font-weight: 700; margin-bottom: 1rem; color: #fff;
+    }
+    p {
+      font-size: 1rem; color: rgba(255,255,255,0.65);
+      max-width: 480px; line-height: 1.7; margin-bottom: 2rem;
+    }
+    .actions {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      justify-content: center; margin-top: 0.5rem;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 1.8rem; border-radius: 0.75rem;
+      font-size: 0.95rem; font-weight: 600;
+      font-family: 'Montserrat', sans-serif;
+      text-decoration: none; transition: all 0.3s ease; cursor: pointer; border: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #0369a1); color: #fff;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px); box-shadow: 0 8px 25px rgba(2,132,199,0.4);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  </style>
+</head>
+<body>
+  <img src="{% static 'images/logo_smyrne.jpeg' %}" alt="Logo Église Smyrne" class="error-logo">
+  <div class="error-code">404</div>
+  <h1>Cette page est introuvable</h1>
+  <p>
+    La page que vous recherchez a peut-être été déplacée, renommée ou supprimée.
+    Revenez à l'accueil pour continuer votre navigation.
+  </p>
+  <div class="actions">
+    <a href="/" class="btn btn-primary">🏠 Retour à l'accueil</a>
+    <a href="/actualites/" class="btn btn-secondary">📰 Actualités</a>
+    <a href="/predications/" class="btn btn-secondary">🎙 Prédications</a>
+  </div>
+</body>
+</html>

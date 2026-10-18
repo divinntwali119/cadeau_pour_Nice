@@ -1,0 +1,471 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ministères & Départements — {{ parametres_site.nom_eglise|default:"5e CELPA SMYRNE" }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/ministeres.css' %}">
+<style>
+  /* ============================================================
+     AUCUNE ANIMATION
+     ============================================================ */
+  .ministeres-page,
+  .ministeres-page * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  .page-hero {
+    text-align: center;
+    padding: 44px 16px 30px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .page-hero .hero-bg,
+  .page-hero .hero-overlay { display: none; }
+  .page-hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1.1px;
+    line-height: 1.08;
+    color: #111827;
+    margin: 0 0 10px;
+  }
+  .page-hero p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 auto;
+    max-width: 540px;
+    line-height: 1.6;
+  }
+
+  /* ============================================================
+     CONTENEUR
+     ============================================================ */
+  .ministeres-wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 16px 48px;
+  }
+
+  /* ============================================================
+     BLOC DE SECTION
+     ============================================================ */
+  .bloc {
+    margin-bottom: 56px;
+  }
+  .bloc:last-child { margin-bottom: 0; }
+
+  .bloc-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 14px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .bloc-head h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    color: #111827;
+    margin: 0;
+  }
+  .bloc-head .bloc-kicker {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #2563eb;
+    white-space: nowrap;
+  }
+
+  /* ============================================================
+     GRILLE DES MINISTÈRES
+     ============================================================ */
+  .ministeres-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  /* ============================================================
+     CARTE MINISTÈRE — éditoriale
+     ============================================================ */
+  .ministere-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 18px rgba(0,0,0,0.045);
+  }
+
+  .personne-photo {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #0f172a;
+    position: relative;
+  }
+  .personne-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ministere-body {
+    padding: 18px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+  }
+
+  .ministere-body h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16.5px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    letter-spacing: -0.3px;
+    line-height: 1.3;
+  }
+
+  .ministere-responsable {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #2563eb;
+    background: rgba(37,99,235,0.08);
+    padding: 4px 9px;
+    align-self: flex-start;
+    border-radius: 0;
+    margin-bottom: 2px;
+  }
+  .ministere-responsable::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #2563eb;
+    flex-shrink: 0;
+  }
+
+  .ministere-body p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #6b7280;
+    margin: 0;
+    flex: 1;
+  }
+
+  /* Départements rattachés */
+  .ministere-departements {
+    margin-top: 4px;
+    padding: 10px 12px;
+    background: #f9fafb;
+    border-left: 3px solid #2563eb;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #4b5563;
+  }
+  .ministere-departements strong {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #111827;
+    margin-bottom: 6px;
+  }
+  .ministere-departements ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+  .ministere-departements li {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #4b5563;
+  }
+  .ministere-departements li::before {
+    content: "•";
+    color: #2563eb;
+    font-weight: 700;
+  }
+
+  /* Bouton */
+  .btn-contact {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    margin-top: 10px;
+    padding: 9px 15px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0;
+    border: none;
+    line-height: 1;
+    transition: background 0.15s ease;
+  }
+  .btn-contact:hover {
+    background: #1d4ed8;
+  }
+  .btn-contact i {
+    font-size: 11px;
+    transition: transform 0.15s ease;
+  }
+  .btn-contact:hover i {
+    transform: translateX(2px);
+  }
+
+  /* ============================================================
+     CARTES CHORALES — plus compactes, sans bouton
+     ============================================================ */
+  .chorale-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .chorale-card .personne-photo {
+    aspect-ratio: 4 / 3;
+  }
+  .chorale-card .ministere-body h3 {
+    font-size: 15.5px;
+  }
+  .chorale-card .ministere-responsable {
+    background: rgba(22,163,74,0.08);
+    color: #16a34a;
+  }
+  .chorale-card .ministere-responsable::before {
+    background: #16a34a;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 900px) {
+    .ministeres-grid {
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+  }
+  @media (max-width: 640px) {
+    .page-hero { padding: 30px 14px 22px; margin-bottom: 24px; }
+    .page-hero h1 { font-size: 24px; letter-spacing: -0.6px; }
+    .page-hero p { font-size: 13px; }
+
+    .ministeres-wrap { padding: 0 14px 32px; }
+    .bloc { margin-bottom: 40px; }
+    .bloc-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .bloc-head h2 { font-size: 18px; }
+    .bloc-head .bloc-kicker { font-size: 10px; }
+
+    .ministeres-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .ministere-body { padding: 16px 16px 18px; }
+    .ministere-body h3 { font-size: 15.5px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ministeres-page">
+
+  <!-- HERO -->
+  <section class="page-hero">
+    <h1>Ministères & Départements</h1>
+    <p>Découvrez les différents services et départements au cœur de la vie de notre église.</p>
+  </section>
+
+  <div class="ministeres-wrap">
+
+    <!-- ============================================================
+         NOS MINISTÈRES
+         ============================================================ -->
+    <section class="bloc">
+      <div class="ministeres-grid">
+        {% if ministeres %}
+          {% for min in ministeres %}
+            <article class="ministere-card">
+              <div class="personne-photo">
+                <img src="{% if min.image %}{{ min.image.url }}{% else %}{% static 'images/ministère.jpg' %}{% endif %}" alt="{{ min.nom }}">
+              </div>
+              <div class="ministere-body">
+                <h3>{{ min.nom }}</h3>
+                {% if min.responsable %}
+                  <span class="ministere-responsable">Responsable : {{ min.responsable }}</span>
+                {% endif %}
+                <p>{{ min.description|default:"Un ministère engagé pour l'édification du corps de Christ." }}</p>
+
+                {% if min.departements.all %}
+                  <div class="ministere-departements">
+                    <strong>Départements rattachés</strong>
+                    <ul>
+                      {% for dep in min.departements.all %}
+                        <li>{{ dep.nom }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% endif %}
+
+                <a href="{% url 'core:accueil' %}#contact" class="btn-contact">
+                  Contactez-nous <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </div>
+            </article>
+          {% endfor %}
+        {% else %}
+          <article class="ministere-card">
+            <div class="personne-photo">
+              <img src="{% static 'images/ministère.jpg' %}" alt="Ministère de la Prière">
+            </div>
+            <div class="ministere-body">
+              <h3>Ministère de la Prière</h3>
+              <span class="ministere-responsable">Responsable : Pasteur Bachoke M.</span>
+              <p>Un ministère dédié à l'intercession, aux veillées de prière et à l'accompagnement spirituel des membres.</p>
+              <a href="{% url 'core:accueil' %}#contact" class="btn-contact">Contactez-nous <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </article>
+          <article class="ministere-card">
+            <div class="personne-photo">
+              <img src="{% static 'images/louange.jpg' %}" alt="Ministère de Louange">
+            </div>
+            <div class="ministere-body">
+              <h3>Ministère de Louange</h3>
+              <span class="ministere-responsable">Responsable : Frère Dieu Merci Lwendje</span>
+              <p>La chorale et l'équipe de louange qui animent les cultes avec des chants inspirés et des adorations.</p>
+              <a href="{% url 'core:accueil' %}#contact" class="btn-contact">Contactez-nous <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </article>
+          <article class="ministere-card">
+            <div class="personne-photo">
+              <img src="{% static 'images/enfance.jpeg' %}" alt="Ministère des Enfants">
+            </div>
+            <div class="ministere-body">
+              <h3>Ministère des Enfants (ECODIM)</h3>
+              <span class="ministere-responsable">Responsable : Jonh Lunanga</span>
+              <p>Un espace dédié à l'éveil spirituel des enfants à travers des cours bibliques et des activités ludiques.</p>
+              <a href="{% url 'core:accueil' %}#contact" class="btn-contact">Contactez-nous <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </article>
+          <article class="ministere-card">
+            <div class="personne-photo">
+              <img src="{% static 'images/jeunesse.jpg' %}" alt="Ministère des Jeunes">
+            </div>
+            <div class="ministere-body">
+              <h3>Ministère des Jeunes</h3>
+              <span class="ministere-responsable">Responsable : Frère Kolesa M.</span>
+              <p>Encadrement des adolescents et jeunes adultes, avec des rencontres, des séminaires et des activités sociales.</p>
+              <a href="{% url 'core:accueil' %}#contact" class="btn-contact">Contactez-nous <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </article>
+          <article class="ministere-card">
+            <div class="personne-photo">
+              <img src="{% static 'images/mission.jpg' %}" alt="Ministère Social & Entraide">
+            </div>
+            <div class="ministere-body">
+              <h3>Ministère Social & Entraide</h3>
+              <span class="ministere-responsable">Responsable : Past. Ramazani M.</span>
+              <p>Actions caritatives, visites aux malades, soutien aux démunis et accompagnement des familles dans le besoin.</p>
+              <a href="{% url 'core:accueil' %}#contact" class="btn-contact">Contactez-nous <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </article>
+          <article class="ministere-card">
+            <div class="personne-photo">
+              <img src="{% static 'images/enseignement.jpeg' %}" alt="Ministère d'Enseignement">
+            </div>
+            <div class="ministere-body">
+              <h3>Ministère d'Enseignement</h3>
+              <span class="ministere-responsable">Responsable : Pasteur Jospin M.</span>
+              <p>Études bibliques, écoles du dimanche, formations et séminaires pour approfondir la connaissance de la Parole.</p>
+              <a href="{% url 'core:accueil' %}#contact" class="btn-contact">Contactez-nous <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </article>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- ============================================================
+         NOS CHORALES & GROUPES DE LOUANGE
+         ============================================================ -->
+    <section class="bloc">
+      <div class="bloc-head">
+        <h2>Nos chorales & groupes de louange</h2>
+        <span class="bloc-kicker">Les voix de Smyrne</span>
+      </div>
+
+      <div class="ministeres-grid">
+        {% if chorales %}
+          {% for ch in chorales %}
+            <article class="chorale-card">
+              <div class="personne-photo">
+                <img src="{% if ch.image %}{{ ch.image.url }}{% else %}{% static 'images/chorale1.jpg' %}{% endif %}" alt="{{ ch.nom }}">
+              </div>
+              <div class="ministere-body">
+                <h3>{{ ch.nom }}</h3>
+                {% if ch.chef_choeur %}
+                  <span class="ministere-responsable">Chef de chœur : {{ ch.chef_choeur }}</span>
+                {% endif %}
+                <p>{{ ch.description|default:"Chorale active pour l'élévation des louanges dans nos assemblées." }}</p>
+              </div>
+            </article>
+          {% endfor %}
+        {% else %}
+          <article class="chorale-card">
+            <div class="personne-photo">
+              <img src="{% static 'images/chorale1.jpg' %}" alt="Chorale Sinaï">
+            </div>
+            <div class="ministere-body">
+              <h3>Chorale Sinaï</h3>
+              <span class="ministere-responsable">Chants d'adoration & Cantiques</span>
+              <p>Un chœur consacré à la louange et à l'édification de l'assemblée lors des cultes.</p>
+            </div>
+          </article>
+          <article class="chorale-card">
+            <div class="personne-photo">
+              <img src="{% static 'images/chorale1.jpg' %}" alt="Groupe de Louange">
+            </div>
+            <div class="ministere-body">
+              <h3>Groupe de Louange Smyrne</h3>
+              <span class="ministere-responsable">Musique contemporaine & Adoration</span>
+              <p>Conduit l'assemblée dans des temps d'adoration vibrants et inspirés chaque dimanche.</p>
+            </div>
+          </article>
+        {% endif %}
+      </div>
+    </section>
+
+  </div>
+</div>
+{% endblock %}

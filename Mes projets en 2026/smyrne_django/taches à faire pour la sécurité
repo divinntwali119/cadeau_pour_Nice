@@ -1,0 +1,158 @@
+Feuille de route de sécurité complète – ce qu’il reste à faire
+Voici la liste des tâches restantes, dans l’ordre logique, pour sécuriser ton projet avant mise en ligne.
+
+1) Corriger l’environnement local
+Objectif : que Django puisse démarrer sans erreur.
+
+À faire :
+
+utiliser un environnement Python compatible
+installer les dépendances système PostgreSQL
+vérifier la version Python utilisée
+valider python manage.py check
+Pourquoi :
+
+actuellement le blocage vient du système, pas du code
+le projet a besoin de pg_config / outils PostgreSQL
+À retenir :
+
+sur Fedora, il faut utiliser dnf
+le paquet clé est postgresql-devel
+la version Python recommandée est 3.13
+2) Vérifier la configuration Django
+Fichiers concernés :
+
+settings.py
+.env
+À faire :
+
+mettre DEBUG = False en production
+définir les vrais ALLOWED_HOSTS
+sécuriser la SECRET_KEY
+vérifier DATABASE_URL
+vérifier STATIC_URL et MEDIA_URL
+3) Sécuriser les mots de passe
+À faire :
+
+changer le mot de passe PostgreSQL
+changer la SECRET_KEY
+changer les mots de passe admin si nécessaire
+ne plus utiliser de mots de passe génériques
+Bonnes pratiques :
+
+mot de passe long
+mélange de lettres, chiffres, symboles
+pas de mot de passe réutilisé
+4) Sécuriser les variables d’environnement
+À faire :
+
+garder .env hors du dépôt Git
+ne pas le committer
+set DEBUG=False dans l’environnement de production
+ne jamais exposer les credentials dans le code
+À vérifier :
+
+.gitignore contient bien .env
+Git ne contient pas de secrets
+5) Vérifier la base de données
+À faire :
+
+vérifier que la base eglisesmyrne_db existe
+vérifier que l’utilisateur divin a bien les droits
+tester la connexion PostgreSQL
+faire un backup avant migration
+Commandes typiques :
+
+python manage.py migrate
+python manage.py check
+6) Vérifier les migrations
+Fichiers concernés :
+
+0001_initial.py
+0001_initial.py
+0001_initial.py
+0001_initial.py
+0001_initial.py
+0001_initial.py
+0001_initial.py
+0001_initial.py
+0001_initial.py
+0001_initial.py
+À faire :
+
+valider que les migrations correspondent bien au modèle
+faire une migration propre
+migrer dans la vraie base de prod
+7) Sécuriser les uploads média
+À faire :
+
+contrôler les types de fichiers autorisés
+limiter la taille des fichiers
+vérifier le dossier media
+empêcher les uploads non désirés
+8) Sécuriser les fichiers statiques
+À faire :
+
+vérifier staticfiles
+vérifier static
+presser/collecter les fichiers avant prod
+ne pas laisser des fichiers de test ou temporaires
+9) Vérifier l’admin Django
+À faire :
+
+sécuriser le compte superuser
+utiliser un mot de passe fort
+restreindre l’accès à l’admin
+garder l’admin derrière HTTPS / accès protégé
+10) Préparer la mise en ligne
+À faire :
+
+fixer le vrai domaine
+activer HTTPS
+configurer ALLOWED_HOSTS
+déployer le projet sur un serveur
+tester les pages publiques et l’admin
+vérifier les logs
+11) Vérifier les alertes de sécurité
+Le projet a un warning détecté :
+
+ckeditor.W001
+À faire :
+
+considérer le remplacement de CKEditor 4 par une version ou un éditeur plus maintenu
+ne pas laisser une version connue vulnérable en production
+12) Contrôle final avant publication
+Checklist finale :
+
+ environnement Python rétabli
+ dépendances installées
+ python manage.py check OK
+ .env sécurisé
+ DEBUG = False
+ ALLOWED_HOSTS mis à jour
+ base PostgreSQL connectée
+ migrations OK
+ admin sécurisé
+ HTTPS activé
+ fichiers de sécurité présents
+✅ Ce qu’on peut faire maintenant, sans bouger les mots de passe
+On peut déjà faire la feuille de route comme travail de suivi :
+
+remettre l’environnement fonctionnel
+sécuriser .env
+passer DEBUG en False
+fixer ALLOWED_HOSTS
+valider la base PostgreSQL
+migrer
+sécuriser l’admin
+préparation de déploiement
+📌 Prochaine étape recommandée
+Je peux te préparer maintenant une version “tâches prêtes à exécuter” avec :
+
+ordre exact
+commandes associées
+validation à chaque étape
+Tu me réponds juste :
+
+“je veux la feuille de route complète”
+et je te la donne sous forme de checklist exploitable, étape par étape, sans aller plus vite.

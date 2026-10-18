@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 64" width="200" height="64">
+  <defs>
+    <linearGradient id="bankBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
+  </defs>
+  <rect x="2" y="4" width="196" height="56" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+  <g transform="translate(14, 12)">
+    <rect width="40" height="40" rx="10" fill="url(#bankBlue)"/>
+    <path d="M20 10 L30 16 L10 16 Z M12 18 h16 v2 h-16 Z M13 21 h2 v7 h-2 Z M19 21 h2 v7 h-2 Z M25 21 h2 v7 h-2 Z M10 29 h20 v2 h-20 Z" fill="#ffffff"/>
+  </g>
+  <text x="64" y="32" font-family="'Poppins', sans-serif" font-weight="800" font-size="16" fill="#0f172a">Virement Bancaire</text>
+  <text x="64" y="46" font-family="'Poppins', sans-serif" font-weight="600" font-size="10" fill="#64748b">BANQUE NATIONALE / DEV</text>
+</svg>
